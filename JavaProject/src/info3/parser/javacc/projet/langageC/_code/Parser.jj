@@ -1,0 +1,364 @@
+/* Michaël PÉRIN,
+ * VERIMAG / Univ. Grenoble-Alpes
+ * INP / Polytech Grenoble
+ */
+
+// PROJET A&G 2023 : a Lexer/Parser for simple C programs
+
+// USAGE: java -cp ./bin info3.parser.javacc.projet.langageC._code.Parser test/file.c
+
+PARSER_BEGIN(Parser)
+package info3.parser.javacc.projet.langageC._code;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import info3.shared.Tracing;
+
+public class Parser {
+
+	public static Algorithm from_file(String path_file) throws Exception {
+    return new Parser(new BufferedReader(new FileReader(path_file))).parse();
+  }
+
+	public static Algorithm from_string(String input_string) throws Exception {
+	  return new Parser(new java.io.StringReader(input_string)).parse();
+  }
+
+  public static void main(String[] args) throws Exception {
+    Tracing.enable_tracing(true);
+    Tracing.enable_xterm_font(true);
+    //
+    String path_file = args[0];
+    Algorithm a = from_file(path_file);
+    // a.print();          
+    // a.toDot("../dot/"); 
+    //
+    System.out.println("\n");
+  }
+}
+PARSER_END(Parser)
+
+// === LEXER ===
+
+SKIP:
+{ < SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* > { Tracing.token("COMMENT", image.toString()); }
+}
+
+SKIP:
+{ < SPACE: " " | "\t" | "\n" | "\r" > // { Tracing.token("SPACE", image.toString()); }
+}  
+
+TOKEN:
+{ < SEMICOL: ";" > { Tracing.token("SEMICOL", image.toString()); }
+| < COMMA : "," > { Tracing.token("COMMA", image.toString()); }
+}
+
+TOKEN:
+{ < PTR  : "*" >  { Tracing.token("PTR", image.toString()); }
+| < ADDR : "&" >  { Tracing.token("ADDR", image.toString()); }
+| < PRE_POST_OP : "++" | "--" | "!">  { Tracing.token("PRE_POST_OP", image.toString()); }
+| < BINOP  : "/" | "!=" | "==" | "|" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" > { Tracing.token("BINOP", image.toString()); }
+| < ASSIGN : "=" | ":=" | "+=" | "-=" | "*=" | "&="  | "|=" >  { Tracing.token("ASSIGN", image.toString()); }
+}
+
+TOKEN:
+{ < LBRACE  : "{" > { Tracing.token("LBRACE", image.toString()); }
+| < RBRACE  : "}" > { Tracing.token("RBRACE", image.toString()); }
+| < LBRACKET: "[" > { Tracing.token("LBRACKET", image.toString()); }
+| < RBRACKET: "]" > { Tracing.token("RBRACKET", image.toString()); }
+| < LPAR    : "(" > { Tracing.token("LPAR", image.toString()); }
+| < RPAR    : ")" > { Tracing.token("RPAR", image.toString()); }
+}
+
+TOKEN:
+{ < STRING : 	// TODO à modifier
+"TODO" /*....................*/ > {  Tracing.token("STRING", image.toString()); }
+}
+
+// = KEYWORDS must be defined before IDENTIFIER
+
+TOKEN:
+{ < BASIC_TYPE: "boolean" | "char" | "double" | "float" | "int" | "string" > { Tracing.token("TYPE", image.toString()); }
+}
+
+TOKEN:
+{ < ALGO: "ALGORITHM" > { Tracing.token("ALGO", image.toString()); }
+| < IF: "if" > { Tracing.token("IF", image.toString()); }
+| < ELSE: "else" > { Tracing.token("ELSE", image.toString()); }
+| < WHILE: "while" > { Tracing.token("WHILE", image.toString()); }
+| < RETURN: "return" > { Tracing.token("RETURN", image.toString()); }
+}
+
+
+TOKEN:
+{ < BOOLEAN: "true" | "false" > { Tracing.token("BOOLEAN", image.toString()); }
+}  
+
+// = NUMERIC
+
+TOKEN: {< #DIGIT: ["0"-"9"] >}
+
+TOKEN:
+{ <  INTEGER: 	// TODO à modifier
+<DIGIT>	// TODO à compléter
+ > { Tracing.token("INTEGER", image.toString()); }
+}
+  
+	// TODO à modifier
+
+TOKEN:
+{ <TODO_INFO3: "TODO INFO3" > }
+
+
+// = IDENTIFIER : GIVEN
+
+TOKEN: {< #LOWERCASE: ["a"-"z"] >}
+TOKEN: {< #UPPERCASE: ["A"-"Z"] >}
+
+TOKEN: {< #ANY_IDENT: (<UPPERCASE> | <LOWERCASE> | <DIGIT> | "_")+ >}
+
+TOKEN: {< #FIRST_UNDERSCORE: "_"  (<ANY_IDENT>)* >}
+TOKEN: {< #FIRST_LOW: <LOWERCASE> (<ANY_IDENT>)* >}
+TOKEN: {< #FIRST_UP: <UPPERCASE> (<ANY_IDENT>)* >}
+
+TOKEN:
+{ < IDENTIFIER: <ANY_IDENT> > { Tracing.token("IDENTIFIER", image.toString()); }
+}
+
+
+// === PARSER ===
+
+
+// GIVEN
+// SEED = parse ::= "ALGORITHM" . "(" . <IDENTIFIER> . ")" . BLOCK . <EOF>
+
+Algorithm parse():
+{
+  Tracing.call(0, "PARSER");
+  Token token;
+  Tree t;
+  Algorithm a;
+}
+{
+  <ALGO>
+  <LPAR>
+  token = <IDENTIFIER>
+  <RPAR>
+  t = BLOCK(1)
+  <EOF>
+  	{
+  	  a = new Algorithm(token.toString(), t);
+  	  Tracing.parsed(0, "PARSER", "\n");
+  	  return a;
+  	 }
+}
+
+
+// BLOCK ::= /*......................*/
+Tree BLOCK(int d):
+{
+   Tracing.call(d, "BLOCK");
+   Tree t,r;
+}
+{
+  <LBRACE>
+  t = SEQUENCE(d+1)
+  <RBRACE>
+    {
+      r = new Block(t);
+  	  // Tracing.parsed(d, "BLOCK", r.pretty());
+      return r;
+    }
+}
+
+
+// SEQUENCE ::= ( STATEMENT )*
+
+Tree SEQUENCE(int d):
+{
+  Tracing.call(d, "SEQUENCE");
+  Tree t;
+  ArrayList<Tree > trees = new ArrayList<Tree>();
+}
+{ 	// TODO à modifier
+
+    t = STATEMENT(d+1)
+  
+  
+  { return new Sequence(trees); }
+}
+
+
+// STATEMENT ::=
+//  | EXPR <SEMICOL> \__  EXPR . opt_ASSIGNMENT <SEMICOL>
+//  | ASSIGNMENT        /
+//  | RETURN
+//  | IFTE  	// TODO à compléter
+
+
+Tree STATEMENT(int d) :
+{
+  Tracing.call(d, "STATEMENT");
+  Tree t,r;
+}
+{
+  	// TODO à modifier
+
+  <IDENTIFIER> <ASSIGN> <INTEGER> <SEMICOL>
+    { return null; }
+  
+	// TODO à compléter
+
+}
+
+
+// opt_ASSIGNMENT ::= 	// TODO à compléter
+
+
+Tree opt_ASSIGNMENT(int d, Tree lhs) :
+{
+   Tracing.call(d,"ASSIGNMENT");
+   Tree rhs ;
+   Token token;
+   Tree r;
+}
+{
+ // TODO à modifier
+ {return null;}
+}
+
+
+// IFTE ::= <IF> . "(" . EXPR . ")" . BLOCK . <ELSE> . BLOCK
+
+Tree IFTE(int d) :
+{
+   Tracing.call(d, "IFTE");
+   Tree tc,tt,te;
+}
+{
+  <IF>
+  <LPAR>
+  tc = EXPR(d+1)
+  <RPAR>
+  tt = BLOCK(d+1)
+  <ELSE>
+  te = BLOCK(d+1)
+    {
+ // TODO à modifier
+ {return null;}
+}
+}
+
+
+
+
+// == Les expressions en C ==
+//  Exemples : 1, x, e+e, f(e), (e), *e, e[e], ..., *(e(e)[e]) 
+
+
+// == GIVEN ==
+// EXPR ::= E1 . opt_BINOP_EXPR 
+
+Tree EXPR(int d) :
+{
+  Tracing.call(d, "EXPR");
+  Tree t,r;
+}
+{ 
+  t = E1(d+1)
+  r = opt_BINOP_EXPR(d+1, t)
+    {
+ // TODO à modifier
+ {return null;}
+}	  
+}
+
+
+// == GIVEN == 
+// Tree opt_BINOP_EXPR ::=
+//    | BINOP . EXPR
+//    | epsilon
+
+Tree opt_BINOP_EXPR(int d, Tree left) :
+{
+  Tracing.call(d, "opt_BINOP_EXPR");
+  String binop;
+  Tree right;
+}
+{
+  binop = BINOP(d+1)
+  right = EXPR(d+1)
+    {
+ // TODO à modifier
+ {return null;}
+} 
+| /*epsilon*/
+    { return left; }     		
+}
+
+
+// String BINOP ::=
+//    | <BINOP>
+//    | <PTR>
+//    | <ADDR>
+
+String BINOP(int d) :
+{
+  Token token;
+}
+{
+ // TODO à modifier
+ {return null;}
+}    
+
+
+// == GIVEN ==
+// Tree IDENTIFIER ::= <IDENTIFIER>
+
+Tree IDENTIFIER(int d) :
+{
+  Tracing.call(d,"IDENTIFIER");
+  Token token;
+}
+{ token = <IDENTIFIER>
+    { return new Ident(token.toString()); }
+}
+
+
+// Tree VALUE ::=
+//    | <INTEGER>
+//    | <BOOL>
+//    | <STRING>
+//    | <FLOAT>
+//    | <DOUBLE>
+
+Tree VALUE(int d) :
+{
+  Tracing.call(d, "VALUE");
+  Tree t;
+}
+{
+ // TODO à modifier
+ {return null;}
+}
+
+
+
+// E1 ::= 	// TODO à compléter
+
+
+Tree E1(int d) :
+{
+	// TODO à compléter
+}
+{ 
+
+	// TODO à modifier
+ 
+  <TODO_INFO3>
+    { return null; }
+ 
+}
+
+

@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author perin
+ *
+ */
+module JavaProject {
+}
