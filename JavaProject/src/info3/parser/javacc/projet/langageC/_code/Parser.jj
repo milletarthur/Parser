@@ -362,3 +362,17 @@ Tree E1(int d) :
 }
 
 
+Tree RETURN(int d) :
+{
+  Tracing.call(d, "RETURN");
+  Tree t;
+}
+{
+  <RETURN>
+  t = EXPR(d)
+  <SEMICOL>
+  // TODO à compléter
+  {
+    return null;
+  }
+}
