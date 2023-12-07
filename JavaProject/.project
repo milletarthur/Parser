@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>JavaProject</name>
-	<comment>JavaCC Nature</comment>
+	<comment>Nature JavaCC</comment>
 	<projects>
 	</projects>
 	<buildSpec>
 		<buildCommand>
-			<name>sf.eclipse.javacc.javaccbuilder</name>
+			<name>sf.eclipse.javacc.core.javaccbuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
@@ -18,7 +18,7 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>sf.eclipse.javacc.javaccnature</nature>
+		<nature>sf.eclipse.javacc.core.javaccnature</nature>
 	</natures>
 	<filteredResources>
 		<filter>
