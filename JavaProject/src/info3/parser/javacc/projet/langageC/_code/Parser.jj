@@ -195,6 +195,7 @@ Tree SEQUENCE(int d):
 //  | ASSIGNMENT        /
 //  | RETURN
 //  | IFTE  	// TODO à compléter
+//	| WHILETE
 
 
 Tree STATEMENT(int d) :
@@ -206,6 +207,11 @@ Tree STATEMENT(int d) :
   	// TODO à modifier
 
   <IDENTIFIER> <ASSIGN> <INTEGER> <SEMICOL>
+  // retirer le commentaire dès que EXPR est fait puis tester si les fonctions marche 
+  /*
+|  WHILETE(d)
+| RETURN(d)
+*/
     { return null; }
   
 	// TODO à compléter
@@ -363,6 +369,41 @@ Tree E1(int d) :
   <TODO_INFO3>
     { return null; }
  
+}
+
+
+Tree RETURN(int d) :
+{
+  Tracing.call(d, "RETURN");
+  Tree t;
+}
+{
+  <RETURN>
+  t = EXPR(d)
+  <SEMICOL>
+  // TODO à compléter
+  {
+    return null;
+  }
+}
+
+// WHILETE  = WHILE +"(" + EXPR + ")"
+Tree WHILETE(int d):
+{
+	Tracing.call(d,"WHILE");
+	Tree t,te;
+}
+{
+  	<WHILE>
+  	<LPAR>
+  	t = EXPR(d+1)
+  	<RPAR>
+  	te = BLOCK(d+1)
+  	
+	{
+	while(t) {  te ;}
+	return te;
+	  }
 }
 
 
