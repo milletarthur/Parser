@@ -213,8 +213,8 @@ Tree STATEMENT(int d) :
 }
 
 
-// opt_ASSIGNMENT ::= 	// TODO à compléter
-
+// opt_ASSIGNMENT ::= 	'=' . EXPR
+//				|        eplsilon
 
 Tree opt_ASSIGNMENT(int d, Tree lhs) :
 {
@@ -224,8 +224,12 @@ Tree opt_ASSIGNMENT(int d, Tree lhs) :
    Tree r;
 }
 {
- // TODO à modifier
- {return null;}
+  < ASSIGN >
+  r = EXPR(d+1)
+  {
+    return r; }
+|  
+ {return lhs;}
 }
 
 
