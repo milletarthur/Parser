@@ -206,12 +206,12 @@ Tree STATEMENT(int d) :
 {
   	// TODO à modifier
 
-  <IDENTIFIER> <ASSIGN> <INTEGER> <SEMICOL>
-  // retirer le commentaire dès que EXPR est fait puis tester si les fonctions marche 
-  /*
-|  WHILETE(d)
-| RETURN(d)
-*/
+  t = EXPR(d+1) <SEMICOL>
+| t = ASSIGNMENT(d+1)
+| t = RETURN(d+1)
+| t = IFTE(d+1)
+| t = WHILETE(d+1)
+ // Tester RETURN, IFTE et WHILETE avec EXPR
     { return null; }
   
 	// TODO à compléter
@@ -256,7 +256,8 @@ Tree IFTE(int d) :
   te = BLOCK(d+1)
     {
  // TODO à modifier
- {return null;}
+ {
+   if (tc) { return tt; } else { return te; }}
 }
 }
 
