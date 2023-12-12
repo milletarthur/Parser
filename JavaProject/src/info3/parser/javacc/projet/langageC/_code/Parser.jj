@@ -101,7 +101,7 @@ TOKEN: {< #DIGIT: ["0"-"9"] >}
 
 TOKEN:
 { <  INTEGER: 	// TODO à modifier
-<DIGIT>	// TODO à compléter
+(<DIGIT>)+ 
  > { Tracing.token("INTEGER", image.toString()); }
 }
   
@@ -355,18 +355,22 @@ Tree VALUE(int d) :
 
 
 
-// E1 ::= 	// TODO à compléter
+// E1 ::=  integer | variable | function | ...
 
 
+// Il faut implémenter les tree
 Tree E1(int d) :
 {
-	// TODO à compléter
+	Tracing.call(d, "E1");
+  Tree t;
 }
-{ 
-
-	// TODO à modifier
+{
+  < INTEGER >
+  {
+    return null; }
+| < IDENTIFIER >
  
-  <TODO_INFO3>
+  //<TODO_INFO3>
     { return null; }
  
 }
