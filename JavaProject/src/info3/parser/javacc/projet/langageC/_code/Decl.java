@@ -8,6 +8,8 @@ public class Decl /* ............ */ implements ITree {
 	// CONSTRUCTOR
 
 	public Decl(String type, Tree var) {
+		//this.type = type;
+		//this.var = var;
 	}
 
 	// PRETTY

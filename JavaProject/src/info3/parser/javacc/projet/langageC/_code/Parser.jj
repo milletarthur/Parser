@@ -191,6 +191,7 @@ Tree SEQUENCE(int d):
 
 
 // STATEMENT ::=
+//  | DECL
 //  | EXPR <SEMICOL> \__  EXPR . opt_ASSIGNMENT <SEMICOL>
 //  | ASSIGNMENT        /
 //  | RETURN
@@ -210,6 +211,16 @@ Tree STATEMENT(int d) :
   
 	// TODO à compléter
 
+}
+
+Tree DECL(int d):
+{
+  Tracing.call(d,"DECLARATION");
+  Tree t;
+}
+{
+  // TODO
+  { return null; }
 }
 
 
