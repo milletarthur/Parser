@@ -209,6 +209,7 @@ Tree STATEMENT(int d) :
 
   t = EXPR(d+1) <SEMICOL>
 | t = ASSIGNMENT(d+1)
+| t = DECL(d+1)
 | t = RETURN(d+1)
 | t = IFTE(d+1)
 | t = WHILETE(d+1)
@@ -226,12 +227,13 @@ Tree DECL(int d):
 }
 {
   // TODO
-  { return null; }
+  t = < BASIC_TYPE > EXPR(d+1) ";"
+  { return /*???*/; }
 }
 
 
 // opt_ASSIGNMENT ::= 	'=' . EXPR
-//				|        eplsilon
+//				|        epsilon
 
 Tree opt_ASSIGNMENT(int d, Tree lhs) :
 {
