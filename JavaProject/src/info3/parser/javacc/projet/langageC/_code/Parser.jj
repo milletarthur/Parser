@@ -58,7 +58,7 @@ TOKEN:
 { < PTR  : "*" >  { Tracing.token("PTR", image.toString()); }
 | < ADDR : "&" >  { Tracing.token("ADDR", image.toString()); }
 | < PRE_POST_OP : "++" | "--" | "!">  { Tracing.token("PRE_POST_OP", image.toString()); }
-| < BINOP  : "/" | "!=" | "==" | "|" | "&" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" > { Tracing.token("BINOP", image.toString()); }
+| < BINOP  : "/" | "!=" | "==" | "|" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" > { Tracing.token("BINOP", image.toString()); }
 | < ASSIGN : "=" | ":=" | "+=" | "-=" | "*=" | "&="  | "|=" >  { Tracing.token("ASSIGN", image.toString()); }
 }
 
@@ -342,6 +342,12 @@ String BINOP(int d) :
 }
 {
   token = < BINOP >
+  {
+    return token.toString(); }
+| token = < PTR >
+  {
+    return token.toString(); }
+| token = < ADDR >
   {
     return token.toString(); }
 }    
