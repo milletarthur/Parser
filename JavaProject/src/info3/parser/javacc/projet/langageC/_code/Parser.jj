@@ -232,13 +232,9 @@ Tree DECL(int d):
 {
   // TODO
   < BASIC_TYPE >
-<<<<<<< HEAD
-  t = ASSIGNMENT(d+1)
-=======
   t = EXPR(d+1)
   t = opt_ASSIGNMENT(d+1, t)
   < SEMICOL >
->>>>>>> refs/remotes/origin/greg
   { return t; }
 }
 
@@ -323,8 +319,14 @@ Tree EXPR(int d) :
   r = opt_BINOP_EXPR(d+1, t)
     {
  // TODO à modifier
- {return null;}
-}	  
+ {return r;}
+}
+| 
+	< LPAR >
+	t = EXPR(d+1)
+	< RPAR >
+	r = opt_BINOP_EXPR(d+1, t)
+	{ return r; }
 }
 
 
@@ -365,19 +367,11 @@ String BINOP(int d) :
   {
     return token.toString(); }
 |
-<<<<<<< HEAD
-token = < PTR >
-  {
-    return token.toString(); }
-|
-token = < ADDR >
-=======
   token = < PTR >
   {
     return token.toString(); }
 |
   token = < ADDR >
->>>>>>> refs/remotes/origin/greg
   {
     return token.toString(); }
 }    
