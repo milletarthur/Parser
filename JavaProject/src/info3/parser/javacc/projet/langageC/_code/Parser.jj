@@ -234,7 +234,9 @@ Tree DECL(int d):
 {
   // TODO
   < BASIC_TYPE >
-  t = ASSIGNMENT(d+1)
+  t = EXPR(d+1)
+  t = opt_ASSIGNMENT(d+1)
+  < SEMICOL >
   { return t; }
 }
 
