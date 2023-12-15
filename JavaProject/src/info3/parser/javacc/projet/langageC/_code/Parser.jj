@@ -58,7 +58,7 @@ TOKEN:
 { < PTR  : "*" >  { Tracing.token("PTR", image.toString()); }
 | < ADDR : "&" >  { Tracing.token("ADDR", image.toString()); }
 | < PRE_POST_OP : "++" | "--" | "!">  { Tracing.token("PRE_POST_OP", image.toString()); }
-| < BINOP  : "/" | "!=" | "==" | "|" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" > { Tracing.token("BINOP", image.toString()); }
+| < BINOP  : "/" | "!=" | "==" | "|" | "&" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" > { Tracing.token("BINOP", image.toString()); }
 | < ASSIGN : "=" | ":=" | "+=" | "-=" | "*=" | "&="  | "|=" >  { Tracing.token("ASSIGN", image.toString()); }
 }
 
@@ -234,8 +234,7 @@ Tree DECL(int d):
 {
   // TODO
   < BASIC_TYPE >
-  t = EXPR(d+1)
-  < SEMICOL >
+  t = ASSIGNMENT(d+1)
   { return t; }
 }
 
