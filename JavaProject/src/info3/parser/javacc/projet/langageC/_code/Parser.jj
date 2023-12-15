@@ -184,9 +184,11 @@ Tree SEQUENCE(int d):
 { 	// TODO à modifier
 
     t = STATEMENT(d+1)
-  
-  
+    SEQUENCE(d)
   { return new Sequence(trees); }
+
+| /* epsilon */
+  {  return null; }
 }
 
 
@@ -206,12 +208,14 @@ Tree STATEMENT(int d) :
 }
 {
   	// TODO à modifier
-
-  t = EXPR(d+1) <SEMICOL>
-| t = ASSIGNMENT(d+1)
+  t = ASSIGNMENT(d+1)
+   { return null;  }
 | t = DECL(d+1)
+   { return null;  }
 | t = RETURN(d+1)
+   { return null;  }
 | t = IFTE(d+1)
+   { return null;  }
 | t = WHILETE(d+1)
  // Tester RETURN, IFTE et WHILETE avec EXPR
     { return null; }
@@ -227,10 +231,28 @@ Tree DECL(int d):
 }
 {
   // TODO
-  t = < BASIC_TYPE > EXPR(d+1) ";"
-  { return /*???*/; }
+  < BASIC_TYPE >
+  t = EXPR(d+1)
+  < SEMICOL >
+  { return t; }
 }
 
+// ASSIGNMENT ::= EXPR . opt_ASSIGNMENT
+Tree ASSIGNMENT(int d) :
+{
+   Tracing.call(d,"ASSIGNMENT");
+   Token token;
+   Tree rhs;
+   Tree lhs;
+}
+{
+   lhs = EXPR(d)
+   rhs = opt_ASSIGNMENT(d, lhs)
+  < SEMICOL >
+   {
+     return null;
+   }
+}
 
 // opt_ASSIGNMENT ::= 	'=' . EXPR
 //				|        epsilon
@@ -247,7 +269,7 @@ Tree opt_ASSIGNMENT(int d, Tree lhs) :
   r = EXPR(d+1)
   {
     return r; }
-|  
+|  /* epsilon */
  {return lhs;}
 }
 
@@ -270,7 +292,9 @@ Tree IFTE(int d) :
     {
  // TODO à modifier
  {
-   if (tc) { return tt; } else { return te; }}
+   //if (tc) { return tt; } else { return te; }
+   return null;
+   }
 }
 }
 
@@ -316,7 +340,7 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
     {
  // TODO à modifier
  {return null;}
-} 
+}
 | /*epsilon*/
     { return left; }     		
 }
@@ -332,8 +356,15 @@ String BINOP(int d) :
   Token token;
 }
 {
- // TODO à modifier
- {return null;}
+  token = < BINOP >
+  {
+    return token.toString(); }
+| token = < PTR >
+  {
+    return token.toString(); }
+| token = < ADDR >
+  {
+    return token.toString(); }
 }    
 
 
@@ -363,6 +394,11 @@ Tree VALUE(int d) :
   Tree t;
 }
 {
+  < INTEGER >
+ {return null;}
+| < BOOLEAN >
+ {return null;}
+| < STRING >
  // TODO à modifier
  {return null;}
 }
@@ -380,15 +416,28 @@ Tree E1(int d) :
 }
 {
   < INTEGER >
-  {
-    return null; }
+  opt_PRE_POST_OP(d+1)
+  {return null; }
 | < IDENTIFIER >
- 
+  opt_PRE_POST_OP(d+1)
   //<TODO_INFO3>
     { return null; }
  
 }
 
+// opt_PRE_POST_OP ::= PRE_POST_OP | epsilon
+Tree opt_PRE_POST_OP(int d) :
+{
+  Tracing.call(d, "opt_PRE_POST_OP");
+}
+{
+  < PRE_POST_OP >
+  {
+    return null; }
+| /* epsilon */
+{
+  return null; } 
+}
 
 Tree RETURN(int d) :
 {
@@ -401,7 +450,7 @@ Tree RETURN(int d) :
   <SEMICOL>
   // TODO à compléter
   {
-    return null;
+    return t;
   }
 }
 
@@ -419,7 +468,7 @@ Tree WHILETE(int d):
   	te = BLOCK(d+1)
   	
 	{
-	while(t) {  te ;}
+	//while(t) {  te ;}
 	return te;
 	  }
 }
