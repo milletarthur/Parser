@@ -344,12 +344,6 @@ String BINOP(int d) :
   token = < BINOP >
   {
     return token.toString(); }
-| token = < PTR >
-  {
-    return token.toString(); }
-| token = < ADDR >
-  {
-    return token.toString(); }
 }    
 
 
@@ -407,6 +401,10 @@ Tree E1(int d) :
   opt_PRE_POST_OP(d+1)
   //<TODO_INFO3>
     { return null; }
+| < PTR > EXPR(d+1)
+	{ return null; }
+| < ADDR > EXPR(d+1)
+{ return null; }
  
 }
 
