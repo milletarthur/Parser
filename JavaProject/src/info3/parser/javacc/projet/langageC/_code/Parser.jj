@@ -159,7 +159,7 @@ Algorithm parse():
 }
 
 
-// BLOCK ::= "{" . SEQUENCE . "}"
+// BLOCK ::= /*......................*/
 Tree BLOCK(int d):
 {
    Tracing.call(d, "BLOCK");
@@ -212,10 +212,8 @@ Tree STATEMENT(int d) :
 }
 {
   	// TODO à modifier
-  t = EXPR(d+1)
-  r = opt_ASSIGNMENT(d+1, t)
-  < SEMICOL >
-   { return r;  }
+  t = ASSIGNMENT(d+1)
+   { return null;  }
 | t = DECL(d+1)
    { return null;  }
 | t = RETURN(d+1)
@@ -238,12 +236,32 @@ Tree DECL(int d):
 {
   // TODO
   < BASIC_TYPE >
+<<<<<<< HEAD
+  t = ASSIGNMENT(d+1)
+=======
   t = EXPR(d+1)
   t = opt_ASSIGNMENT(d+1, t)
   < SEMICOL >
+>>>>>>> refs/remotes/origin/greg
   { return t; }
 }
 
+// ASSIGNMENT ::= EXPR . opt_ASSIGNMENT
+Tree ASSIGNMENT(int d) :
+{
+   Tracing.call(d,"ASSIGNMENT");
+   Token token;
+   Tree rhs;
+   Tree lhs;
+}
+{
+   lhs = EXPR(d)
+   rhs = opt_ASSIGNMENT(d, lhs)
+  < SEMICOL >
+   {
+     return null;
+   }
+}
 
 // opt_ASSIGNMENT ::= 	'=' . EXPR
 //				|        epsilon
@@ -350,6 +368,22 @@ String BINOP(int d) :
   token = < BINOP >
   {
     return token.toString(); }
+|
+<<<<<<< HEAD
+token = < PTR >
+  {
+    return token.toString(); }
+|
+token = < ADDR >
+=======
+  token = < PTR >
+  {
+    return token.toString(); }
+|
+  token = < ADDR >
+>>>>>>> refs/remotes/origin/greg
+  {
+    return token.toString(); }
 }    
 
 
@@ -415,7 +449,7 @@ Tree E1(int d) :
 | < ADDR >
 	EXPR(d+1)
 { return null; }
- 
+
 }
 
 // opt_PRE_POST_OP ::= PRE_POST_OP | epsilon
