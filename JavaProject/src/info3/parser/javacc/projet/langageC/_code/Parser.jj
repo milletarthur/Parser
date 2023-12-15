@@ -52,6 +52,7 @@ SKIP:
 TOKEN:
 { < SEMICOL: ";" > { Tracing.token("SEMICOL", image.toString()); }
 | < COMMA : "," > { Tracing.token("COMMA", image.toString()); }
+| < DOT : "." > { Tracing.token("DOT", image.toString()); }
 }
 
 TOKEN:
@@ -100,7 +101,10 @@ TOKEN:
 TOKEN: {< #DIGIT: ["0"-"9"] >}
 
 TOKEN:
-{ <  INTEGER: 	// TODO à modifier
+{
+  < FLOAT : (< DIGIT >)+  < DOT >  (< DIGIT >)*
+| 			(< DIGIT >)*  < DOT >  (< DIGIT >)+ > { Tracing.token("FLOAT", image.toString()); }
+|  <  INTEGER: 	// TODO à modifier
 (<DIGIT>)+ 
  > { Tracing.token("INTEGER", image.toString()); }
 }
@@ -403,7 +407,9 @@ Tree VALUE(int d) :
   Tree t;
 }
 {
-  < INTEGER >
+  < FLOAT >
+  { return null; }
+| < INTEGER >
  {return null;}
 | < BOOLEAN >
  {return null;}
@@ -424,17 +430,20 @@ Tree E1(int d) :
   Tree t;
 }
 {
-  < INTEGER >
+  t = VALUE(d+1)
   opt_PRE_POST_OP(d+1)
-  {return null; }
+  {return t; }
 | < IDENTIFIER >
   opt_PRE_POST_OP(d+1)
   //<TODO_INFO3>
     { return null; }
-| < PTR > EXPR(d+1)
+| < PTR >
+	EXPR(d+1)
 	{ return null; }
-|  < ADDR > EXPR(d+1)
-	{ return null; }
+| < ADDR >
+	EXPR(d+1)
+{ return null; }
+
 }
 
 // opt_PRE_POST_OP ::= PRE_POST_OP | epsilon
