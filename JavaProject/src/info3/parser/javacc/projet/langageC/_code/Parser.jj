@@ -73,14 +73,13 @@ TOKEN:
 }
 
 TOKEN:
-{ < STRING : 	// TODO à modifier
-"TODO" /*....................*/ > {  Tracing.token("STRING", image.toString()); }
+{ < STRING : "\"" <ANY_IDENT> "\"" > {  Tracing.token("STRING", image.toString()); }
 }
 
 // = KEYWORDS must be defined before IDENTIFIER
 
 TOKEN:
-{ < BASIC_TYPE: "boolean" | "char" | "double" | "float" | "int" | "string" > { Tracing.token("TYPE", image.toString()); }
+{ < BASIC_TYPE: "bool" | "char" | "double" | "float" | "int" | "string" > { Tracing.token("TYPE", image.toString()); }
 }
 
 TOKEN:
@@ -279,7 +278,7 @@ Tree opt_ASSIGNMENT(int d, Tree lhs) :
 }
 
 
-// IFTE ::= <IF> . "(" . EXPR . ")" . BLOCK . <ELSE> . BLOCK
+// IFTE ::= <IF> . "(" . EXPR . ")" . BLOCK . opt_ELSE
 
 Tree IFTE(int d) :
 {
@@ -292,8 +291,7 @@ Tree IFTE(int d) :
   tc = EXPR(d+1)
   <RPAR>
   tt = BLOCK(d+1)
-  <ELSE>
-  te = BLOCK(d+1)
+  te = opt_ELSE(d+1)
     {
  // TODO à modifier
  {
@@ -303,7 +301,19 @@ Tree IFTE(int d) :
 }
 }
 
-
+// opt_ELSE ::= <ELSE> . BLOCK | epsilon
+Tree opt_ELSE(int d) :
+{
+	Tracing.call(d, "opt_ELSE");
+	Tree te;
+}
+{
+	<ELSE>
+  	te = BLOCK(d+1)
+	{ return te; }
+| /*epsilon*/
+	{ return null; }
+}
 
 
 // == Les expressions en C ==
@@ -311,7 +321,8 @@ Tree IFTE(int d) :
 
 
 // == GIVEN ==
-// EXPR ::= E1 . opt_BINOP_EXPR 
+// EXPR ::= E1 . opt_BINOP_EXPR
+//         | (. EXPR . ) . opt_BINOP_EXPR
 
 Tree EXPR(int d) :
 {
@@ -332,12 +343,13 @@ Tree EXPR(int d) :
 	r = opt_BINOP_EXPR(d+1, t)
 	{ return r; }
 }
-
+  
 
 // == GIVEN == 
 // Tree opt_BINOP_EXPR ::=
 //    | BINOP . EXPR
 //    | epsilon
+//    | [ EXPR ]
 
 Tree opt_BINOP_EXPR(int d, Tree left) :
 {
@@ -352,6 +364,11 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
  // TODO à modifier
  {return null;}
 }
+|
+	< LBRACKET >
+	EXPR(d+1)
+	< RBRACKET >
+	{ return null; }
 | /*epsilon*/
     { return left; }     		
 }
@@ -441,6 +458,9 @@ Tree E1(int d) :
 	EXPR(d+1)
 	{ return null; }
 | < ADDR >
+	EXPR(d+1)
+{ return null; }
+| < PRE_POST_OP >
 	EXPR(d+1)
 { return null; }
 
