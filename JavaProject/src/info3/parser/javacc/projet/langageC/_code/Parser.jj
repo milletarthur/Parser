@@ -155,7 +155,7 @@ Algorithm parse():
 }
 
 
-// BLOCK ::= /*......................*/
+// BLOCK ::= "{" . SEQUENCE . "}"
 Tree BLOCK(int d):
 {
    Tracing.call(d, "BLOCK");
@@ -208,8 +208,10 @@ Tree STATEMENT(int d) :
 }
 {
   	// TODO à modifier
-  t = ASSIGNMENT(d+1)
-   { return null;  }
+  t = EXPR(d+1)
+  r = opt_ASSIGNMENT(d+1, t)
+  < SEMICOL >
+   { return r;  }
 | t = DECL(d+1)
    { return null;  }
 | t = RETURN(d+1)
@@ -237,22 +239,6 @@ Tree DECL(int d):
   { return t; }
 }
 
-// ASSIGNMENT ::= EXPR . opt_ASSIGNMENT
-Tree ASSIGNMENT(int d) :
-{
-   Tracing.call(d,"ASSIGNMENT");
-   Token token;
-   Tree rhs;
-   Tree lhs;
-}
-{
-   lhs = EXPR(d)
-   rhs = opt_ASSIGNMENT(d, lhs)
-  < SEMICOL >
-   {
-     return null;
-   }
-}
 
 // opt_ASSIGNMENT ::= 	'=' . EXPR
 //				|        epsilon
