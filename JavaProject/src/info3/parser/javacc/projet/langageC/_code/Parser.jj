@@ -58,7 +58,7 @@ TOKEN:
 TOKEN:
 { < PTR  : "*" >  { Tracing.token("PTR", image.toString()); }
 | < PRE_POST_OP : "++" | "--" | "!">  { Tracing.token("PRE_POST_OP", image.toString()); }
-| < BINOP  : "/" | "!=" | "==" | "|" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" > { Tracing.token("BINOP", image.toString()); }
+| < BINOP  : "/" | "!=" | "==" | "|" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>" > { Tracing.token("BINOP", image.toString()); }
 | < ASSIGN : "=" | ":=" | "+=" | "-=" | "*=" | "&="  | "|=" >  { Tracing.token("ASSIGN", image.toString()); }
 | < ADDR : "&" >  { Tracing.token("ADDR", image.toString()); }
 }
