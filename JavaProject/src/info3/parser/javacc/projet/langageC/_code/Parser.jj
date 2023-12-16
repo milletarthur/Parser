@@ -230,15 +230,16 @@ Tree STATEMENT(int d) :
 Tree DECL(int d):
 {
   Tracing.call(d,"DECLARATION");
+  Token token;
   Tree t;
 }
 {
   // TODO
-  < BASIC_TYPE >
+  token = < BASIC_TYPE >
   t = EXPR(d+1)
   t = opt_ASSIGNMENT(d+1, t)
   < SEMICOL >
-  { return t; }
+  { return new Decl(token.toString(), t); }
 }
 
 // ASSIGNMENT ::= EXPR . opt_ASSIGNMENT
@@ -270,11 +271,11 @@ Tree opt_ASSIGNMENT(int d, Tree lhs) :
 }
 {
   < ASSIGN >
-  r = EXPR(d+1)
+  rhs = EXPR(d+1)
   {
-    return r; }
+    return new Assign(lhs, rhs); }
 |  /* epsilon */
- {return lhs;}
+ {return new Assign(lhs, null);}
 }
 
 
@@ -421,18 +422,20 @@ Tree IDENTIFIER(int d) :
 Tree VALUE(int d) :
 {
   Tracing.call(d, "VALUE");
+  Token token;
   Tree t;
 }
 {
-  < FLOAT >
-  { return null; }
-| < INTEGER >
- {return null;}
-| < BOOLEAN >
- {return null;}
-| < STRING >
+  token = < FLOAT >
+  { t = new Value(token.toString);
+    return t; }
+| token = < INTEGER >
+ {return t;}
+| token = < BOOLEAN >
+ {return t;}
+| token = < STRING >
  // TODO à modifier
- {return null;}
+ {return t;}
 }
 
 

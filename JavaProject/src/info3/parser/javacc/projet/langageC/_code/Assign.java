@@ -8,6 +8,8 @@ public class Assign extends Tree implements ITree {
 	// CONSTRUCTOR
 
 	public Assign(Tree lhs, Tree rhs) {
+		this.location = lhs;
+		this.expression = rhs;
 	}
 
 	// PRETTY

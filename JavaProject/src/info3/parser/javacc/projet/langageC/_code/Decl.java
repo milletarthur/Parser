@@ -1,6 +1,6 @@
 package info3.parser.javacc.projet.langageC._code;
 
-public class Decl /* ............ */ implements ITree {
+public class Decl extends Tree implements ITree {
 
 	String type;
 	Tree var;
@@ -8,8 +8,8 @@ public class Decl /* ............ */ implements ITree {
 	// CONSTRUCTOR
 
 	public Decl(String type, Tree var) {
-		//this.type = type;
-		//this.var = var;
+		this.type = type;
+		this.var = var;
 	}
 
 	// PRETTY
