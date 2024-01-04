@@ -158,7 +158,7 @@ Algorithm parse():
 }
 
 
-// BLOCK ::= /*......................*/
+// BLOCK ::= { . SEQUENCE . }
 Tree BLOCK(int d):
 {
    Tracing.call(d, "BLOCK");
@@ -221,7 +221,7 @@ Tree STATEMENT(int d) :
    { return null;  }
 | t = WHILETE(d+1)
  // Tester RETURN, IFTE et WHILETE avec EXPR
-    { return null; }
+    { return t; }
   
 	// TODO à compléter
 
@@ -255,7 +255,7 @@ Tree ASSIGNMENT(int d) :
    rhs = opt_ASSIGNMENT(d, lhs)
   < SEMICOL >
    {
-     return null;
+     return rhs;
    }
 }
 
@@ -293,12 +293,8 @@ Tree IFTE(int d) :
   <RPAR>
   tt = BLOCK(d+1)
   te = opt_ELSE(d+1)
-    {
- // TODO à modifier
- {
-   //if (tc) { return tt; } else { return te; }
-   return null;
-   }
+{
+  return new Ifte(tc, tt, te);
 }
 }
 
@@ -363,7 +359,7 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
   right = EXPR(d+1)
     {
  // TODO à modifier
- {return null;}
+ {return new Binop(left, binop, right);}
 }
 |
 	< LBRACKET >
@@ -427,15 +423,18 @@ Tree VALUE(int d) :
 }
 {
   token = < FLOAT >
-  { t = new Value(token.toString);
+  { t = new Value(token.toString());
     return t; }
 | token = < INTEGER >
- {return t;}
+ {t = new Value(token.toString());
+ return t;}
 | token = < BOOLEAN >
- {return t;}
+ {t = new Value(token.toString());
+ return t;}
 | token = < STRING >
  // TODO à modifier
- {return t;}
+ {t = new Value(token.toString());
+ return t;}
 }
 
 
@@ -453,7 +452,7 @@ Tree E1(int d) :
   t = VALUE(d+1)
   opt_PRE_POST_OP(d+1)
   {return t; }
-| < IDENTIFIER >
+| t = IDENTIFIER(d+1)
   opt_PRE_POST_OP(d+1)
   //<TODO_INFO3>
     { return null; }

@@ -18,8 +18,7 @@ public class Sequence extends Tree implements ITree {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO à modifier
-		return false;
+		return statements.isEmpty();
 	}
 
 	// PRETTY

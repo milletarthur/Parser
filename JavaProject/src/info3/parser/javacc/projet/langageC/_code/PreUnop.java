@@ -1,12 +1,15 @@
 package info3.parser.javacc.projet.langageC._code;
 
-public class PreUnop /* ............ */ implements ITree {
+public class PreUnop extends Tree implements ITree {
 
-	// TODO à compléter
+	String op;
+	Tree expr;
 
 	// CONSTRUCTOR
 
 	public PreUnop(String s, Tree t) {
+		this.op = s;
+		this.expr = t;
 	}
 
 	// PRETTY

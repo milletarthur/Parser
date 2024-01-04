@@ -1,12 +1,17 @@
 package info3.parser.javacc.projet.langageC._code;
 
-public class Ifte /* ............ */ implements ITree {
+public class Ifte extends Tree implements ITree {
 
-	/* .................................. */
+	Tree cond;
+	Tree then_block;
+	Tree else_block;
 
 	// CONSTRUCTOR
 
 	public Ifte(Tree cond, Tree then_block, Tree else_block) {
+		this.cond = cond;
+		this.then_block = then_block;
+		this.else_block = else_block;
 	}
 
 	// PRETTY
