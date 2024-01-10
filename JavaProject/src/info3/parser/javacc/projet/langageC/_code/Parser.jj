@@ -206,7 +206,7 @@ Tree SEQUENCE(int d):
 Tree STATEMENT(int d) :
 {
   Tracing.call(d, "STATEMENT");
-  Tree t,r;
+  Tree t;
 }
 {
   	// TODO à modifier

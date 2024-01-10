@@ -7,6 +7,7 @@ public class Block extends Tree implements ITree {
 	// CONSTRUCTOR
 
 	public Block(Tree t) {
+		this.sequence = t;
 	}
 
 	// PREDICATE
