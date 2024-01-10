@@ -18,10 +18,17 @@ public class Ifte extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
-		// TODO à modifier
-		{
-			return null;
+		String string = new String();
+		string += Pretty.identifier(format, "if");
+		string += Pretty.string(format, "(");
+		string += cond.pretty(d);
+		string += Pretty.string(format, ")");
+		string += then_block.pretty(d);
+		if (!else_block.isEmpty()) {
+			string += Pretty.identifier(format,"else");
+			string += else_block.pretty(d);
 		}
+		return string;
 	}
 
 	// CFG

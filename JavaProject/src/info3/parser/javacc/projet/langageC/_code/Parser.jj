@@ -186,12 +186,11 @@ Tree SEQUENCE(int d):
 }
 { 	// TODO à modifier
 
+  (
     t = STATEMENT(d+1)
-    SEQUENCE(d)
+    { trees.add(t); }
+  )*
   { return new Sequence(trees); }
-
-| /* epsilon */
-  {  return null; }
 }
 
 
@@ -212,16 +211,16 @@ Tree STATEMENT(int d) :
 {
   	// TODO à modifier
   t = ASSIGNMENT(d+1)
-   { return t;  }
+   { return new Assign(t);  }
 | t = DECL(d+1)
-   { return t;  }
+   { return new Decl(t);  }
 | t = RETURN(d+1)
-   { return t;  }
+   { return new Return(t);  }
 | t = IFTE(d+1)
-   { return t;  }
+   { return new Ifte(t);  }
 | t = WHILETE(d+1)
  // Tester RETURN, IFTE et WHILETE avec EXPR
-    { return t; }
+    { return new While(t); }
   
 	// TODO à compléter
 
@@ -306,7 +305,7 @@ Tree opt_ELSE(int d) :
 {
 	<ELSE>
   	te = BLOCK(d+1)
-	{ return te; }
+	{ return new Block(te); }
 | /*epsilon*/
 	{ return null; }
 }
