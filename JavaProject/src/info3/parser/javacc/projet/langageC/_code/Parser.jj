@@ -446,39 +446,41 @@ Tree E1(int d) :
 {
 	Tracing.call(d, "E1");
   Tree t;
+  Token token;
 }
 {
   t = VALUE(d+1)
-  opt_PRE_POST_OP(d+1)
+  t = opt_POST_OP(d+1, t)
   {return t; }
 | t = IDENTIFIER(d+1)
-  opt_PRE_POST_OP(d+1)
+  t = opt_POST_OP(d+1, t)
   //<TODO_INFO3>
-    { return null; }
+    { return t; }
 | < PTR >
-	EXPR(d+1)
-	{ return null; }
+	t = EXPR(d+1)
+	{ return new Deref(t); }
 | < ADDR >
-	EXPR(d+1)
-{ return null; }
-| < PRE_POST_OP >
-	EXPR(d+1)
-{ return null; }
+	t = EXPR(d+1)
+{ return new Address(t); }
+| token = < PRE_POST_OP >
+	t = EXPR(d+1)
+{ return PreUnop(token.toString(), t); }
 
 }
 
 // opt_PRE_POST_OP ::= PRE_POST_OP | epsilon
-Tree opt_PRE_POST_OP(int d) :
+Tree opt_POST_OP(int d, Tree lhs) :
 {
   Tracing.call(d, "opt_PRE_POST_OP");
+  Token token;
 }
 {
-  < PRE_POST_OP >
+  token = < PRE_POST_OP >
   {
-    return null; }
+    return new PostUnop(lhs, token.toString()); }
 | /* epsilon */
 {
-  return null; } 
+  return lhs; } 
 }
 
 Tree RETURN(int d) :

@@ -1,6 +1,6 @@
 package info3.parser.javacc.projet.langageC._code;
 
-public class Deref /* ............ */ implements ITree {
+public class Deref extends Tree implements ITree {
 
 	Tree location;
 
