@@ -237,7 +237,7 @@ Tree DECL(int d):
   // TODO
   token = < BASIC_TYPE >
   t = ASSIGNMENT(d+1)
-  < SEMICOL >
+  // < SEMICOL > enlevé car déjà dans ASSIGNMENT
   { return new Decl(token.toString(), t); }
 }
 

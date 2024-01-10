@@ -19,10 +19,10 @@ public class Assign extends Tree implements ITree {
 	@Override
 	public String pretty(int d) {
 		String string = new String();
+		string += Pretty.type(format, assign_type);
 		string += location.pretty(d);
 		string += Pretty.assignment(format, " = ");
-		// TODO à compléter
-
+		string += expression.pretty(d);
 		string += Pretty.separator(format, ";");
 		return string;
 	}

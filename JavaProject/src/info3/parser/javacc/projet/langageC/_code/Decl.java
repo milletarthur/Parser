@@ -16,10 +16,11 @@ public class Decl extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
-		// TODO à modifier
-		{
-			return null;
-		}
+		String string = new String();
+		string += Pretty.type(format, type);
+		string += var.pretty(d);
+		string += Pretty.separator(format, ";");
+		return string;
 	}
 
 	// CFG
