@@ -13,10 +13,11 @@ public class Parenthesis extends Tree implements ITree {
 	/* @........ */
 
 	public String pretty(int d) {
-		// TODO à modifier
-		{
-			return null;
-		}
+		String string = new String();
+		//string += newline(d);
+		string += Pretty.string(format, "(");
+		string += content.pretty(d);
+		string += Pretty.string(format, ")");
+		return string;
 	}
-
 }
