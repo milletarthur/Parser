@@ -1,6 +1,6 @@
 package info3.parser.javacc.projet.langageC._code;
 
-public class PostUnop /* ............ */ implements ITree {
+public class PostUnop extends Tree implements ITree {
 
 	Tree operand;
 	String op;
@@ -8,6 +8,8 @@ public class PostUnop /* ............ */ implements ITree {
 	// CONSTRUCTOR
 
 	public PostUnop(Tree t, String s) {
+		this.operand = t;
+		this.op = s;
 	}
 
 	// PRETTY

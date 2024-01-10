@@ -3,12 +3,14 @@ package info3.parser.javacc.projet.langageC._code;
 public class Assign extends Tree implements ITree {
 
 	Tree location;
+	String assign_type;
 	Tree expression;
 
 	// CONSTRUCTOR
 
-	public Assign(Tree lhs, Tree rhs) {
+	public Assign(Tree lhs, String assign_type, Tree rhs) {
 		this.location = lhs;
+		this.assign_type = assign_type;
 		this.expression = rhs;
 	}
 

@@ -212,13 +212,13 @@ Tree STATEMENT(int d) :
 {
   	// TODO à modifier
   t = ASSIGNMENT(d+1)
-   { return null;  }
+   { return t;  }
 | t = DECL(d+1)
-   { return null;  }
+   { return t;  }
 | t = RETURN(d+1)
-   { return null;  }
+   { return t;  }
 | t = IFTE(d+1)
-   { return null;  }
+   { return t;  }
 | t = WHILETE(d+1)
  // Tester RETURN, IFTE et WHILETE avec EXPR
     { return t; }
@@ -236,8 +236,7 @@ Tree DECL(int d):
 {
   // TODO
   token = < BASIC_TYPE >
-  t = EXPR(d+1)
-  t = opt_ASSIGNMENT(d+1, t)
+  t = ASSIGNMENT(d+1)
   < SEMICOL >
   { return new Decl(token.toString(), t); }
 }
@@ -270,12 +269,12 @@ Tree opt_ASSIGNMENT(int d, Tree lhs) :
    Tree r;
 }
 {
-  < ASSIGN >
+  token = < ASSIGN >
   rhs = EXPR(d+1)
   {
-    return new Assign(lhs, rhs); }
+    return new Assign(lhs, token.toString(), rhs); }
 |  /* epsilon */
- {return new Assign(lhs, null);}
+ {return lhs;}
 }
 
 

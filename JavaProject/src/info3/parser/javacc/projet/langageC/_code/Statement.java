@@ -1,12 +1,13 @@
 package info3.parser.javacc.projet.langageC._code;
 
-public class Statement /* ............ */ implements ITree {
+public class Statement extends Tree implements ITree {
 
-	/* .......... */
+	Tree expr;
 
 	// CONSTRUCTOR
 
 	public Statement(Tree expr) {
+		this.expr = expr;
 	}
 
 	// PRETTY
