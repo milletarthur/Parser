@@ -2,7 +2,7 @@ package info3.parser.javacc.projet.langageC._code;
 
 import java.util.ArrayList;
 
-public class Call /* ............ */ implements ITree {
+public class Call extends Tree implements ITree {
 
 	Tree fun;
 	ArrayList<Tree> args;

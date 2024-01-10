@@ -2,7 +2,7 @@ package info3.parser.javacc.projet.langageC._code;
 
 import java.util.ArrayList;
 
-public class Cell /* ............ */ implements ITree {
+public class Cell extends Tree implements ITree {
 
 	Tree array;
 	ArrayList<Tree> cells;

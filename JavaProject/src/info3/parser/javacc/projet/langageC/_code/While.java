@@ -1,11 +1,13 @@
 package info3.parser.javacc.projet.langageC._code;
 
-public class While /* ............ */ implements ITree {
+public class While extends Tree implements ITree {
 
 	Tree cond;
 	Tree body;
 
 	public While(Tree cond, Tree body) {
+		this.cond = cond;
+		this.body = body;
 	}
 
 	// PRETTY

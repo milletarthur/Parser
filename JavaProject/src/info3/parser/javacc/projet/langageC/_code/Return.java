@@ -1,13 +1,12 @@
 package info3.parser.javacc.projet.langageC._code;
 
-import info3.shared.Dot;
-import info3.shared.Format;
 
-public class Return /* ............ */ implements ITree {
+public class Return extends Tree implements ITree {
 
-	/* .......... */
+	Tree expr;
 
 	public Return(Tree expr) {
+		this.expr = expr;
 	}
 
 	// PRETTY
