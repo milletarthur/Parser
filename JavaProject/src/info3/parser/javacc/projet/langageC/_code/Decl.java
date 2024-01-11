@@ -1,15 +1,19 @@
 package info3.parser.javacc.projet.langageC._code;
 
+import java.util.ArrayList;
+
 public class Decl extends Tree implements ITree {
 
+	ArrayList<Tree> arrays;
 	String type;
 	Tree var;
 
 	// CONSTRUCTOR
 
-	public Decl(String type, Tree var) {
+	public Decl(String type, Tree var, ArrayList<Tree> arrays) {
 		this.type = type;
 		this.var = var;
+		this.arrays = arrays;
 	}
 
 	// PRETTY
@@ -21,6 +25,7 @@ public class Decl extends Tree implements ITree {
 		string += var.pretty(d);
 		string += Pretty.separator(format, ";");
 		return string;
+		// TODO pretty à finir pour les tableaux multidimensionnels
 	}
 
 	// CFG

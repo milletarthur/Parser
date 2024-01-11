@@ -209,18 +209,15 @@ Tree STATEMENT(int d) :
   Tree t;
 }
 {
-  	// TODO à modifier
-  t = ASSIGNMENT(d+1)
-   { return new Assign(t);  }
-| t = DECL(d+1)
-   { return new Decl(t);  }
+  t = DECL(d+1)
+   { return t;  }
 | t = RETURN(d+1)
-   { return new Return(t);  }
+   { return t;  }
 | t = IFTE(d+1)
-   { return new Ifte(t);  }
+   { return t;  }
 | t = WHILETE(d+1)
  // Tester RETURN, IFTE et WHILETE avec EXPR
-    { return new While(t); }
+    { return t; }
   
 	// TODO à compléter
 
@@ -231,13 +228,31 @@ Tree DECL(int d):
   Tracing.call(d,"DECLARATION");
   Token token;
   Tree t;
+  Tree a=null;
+  ArrayList<Tree> arrays = new ArrayList<Tree>();
 }
 {
   // TODO
   token = < BASIC_TYPE >
-  t = ASSIGNMENT(d+1)
-  // < SEMICOL > enlevé car déjà dans ASSIGNMENT
-  { return new Decl(token.toString(), t); }
+  (
+    (
+      < LBRACKET >
+      a = EXPR(d+1)
+      < RBRACKET >
+      { arrays.add(a); }
+    )*
+    t = ASSIGNMENT(d+1)
+  |
+  	t = ASSIGNMENT(d+1)
+  	(
+      < LBRACKET >
+      a = EXPR(d+1)
+      < RBRACKET >
+      { arrays.add(a); }
+    )*
+  )
+  < SEMICOL >
+  { return new Decl(token.toString(), t, arrays); }
 }
 
 // ASSIGNMENT ::= EXPR . opt_ASSIGNMENT
@@ -251,7 +266,6 @@ Tree ASSIGNMENT(int d) :
 {
    lhs = EXPR(d)
    rhs = opt_ASSIGNMENT(d, lhs)
-  < SEMICOL >
    {
      return rhs;
    }
