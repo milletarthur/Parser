@@ -31,7 +31,7 @@ public class Parser {
     //
     String path_file = args[0];
     Algorithm a = from_file(path_file);
-    // a.print();          
+     a.print();          
     // a.toDot("../dot/"); 
     //
     System.out.println("\n");
@@ -249,7 +249,7 @@ Tree DECL(int d):
       a = EXPR(d+1)
       < RBRACKET >
       { arrays.add(a); }
-    )*
+    )+
   )
   < SEMICOL >
   { return new Decl(token.toString(), t, arrays); }
@@ -477,7 +477,7 @@ Tree E1(int d) :
 { return new Address(t); }
 | token = < PRE_POST_OP >
 	t = EXPR(d+1)
-{ return PreUnop(token.toString(), t); }
+{ return new PreUnop(token.toString(), t); }
 
 }
 
