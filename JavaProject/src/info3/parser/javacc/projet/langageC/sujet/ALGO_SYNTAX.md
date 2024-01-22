@@ -29,7 +29,7 @@ opt_BINOP_EXPR ::=
 
 ASSIGNEMENT ::= IDENT . BINASSIGN . EXPR
 
-DECL ::= TYPE . IDENT . opt_DECL . ("," . IDENT . opt_DECL)*
+DECL ::= SIGN . PRE_TYPE . TYPE . IDENT . opt_DECL . ("," . IDENT . opt_DECL)*
 
 opt_DECL ::=
     | epsilon
@@ -60,8 +60,7 @@ opt_ARGS ::=
 
 opt_E1 ::=
     | PRE_POST_OP
-    | "[" . EXPR . "]"
-    | epsilon
+    | ("[" . EXPR . "]")*
 
 PRE_POST_OP ::= "++" | "--" | "!"
 
@@ -100,5 +99,12 @@ TYPE ::=
     | "int"
     | "char"
     | "string"
+    | "long"
+    | "double"
+    | "float"
+
+SIGN ::= "unsigned" | "signed" | epsilon
+
+PRE_TYPE ::= "long" | "short" | epsilon
 
 ```

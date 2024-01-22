@@ -58,8 +58,8 @@ TOKEN:
 TOKEN:
 { < PTR  : "*" >  { Tracing.token("PTR", image.toString()); }
 | < PRE_POST_OP : "++" | "--" | "!">  { Tracing.token("PRE_POST_OP", image.toString()); }
-| < BINOP  : "/" | "!=" | "==" | "|" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>" > { Tracing.token("BINOP", image.toString()); }
-| < ASSIGN : "=" | ":=" | "+=" | "-=" | "*=" | "&="  | "|=" >  { Tracing.token("ASSIGN", image.toString()); }
+| < BINOP  : "/" | "*" | "!=" | "==" | "|" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>" > { Tracing.token("BINOP", image.toString()); }
+| < BINASSIGN : "=" | ":=" | "+=" | "-=" | "*=" | "&="  | "|=" | "<<=" | ">>=" >  { Tracing.token("ASSIGN", image.toString()); }
 | < ADDR : "&" >  { Tracing.token("ADDR", image.toString()); }
 }
 
@@ -72,14 +72,24 @@ TOKEN:
 | < RPAR    : ")" > { Tracing.token("RPAR", image.toString()); }
 }
 
+/*
 TOKEN:
-{ < STRING : "\"" <ANY_IDENT> "\"" > {  Tracing.token("STRING", image.toString()); }
+{ < STRING : "\"" (< ASCII >)* "\"" > {  Tracing.token("STRING", image.toString()); }
+| < CHAR: "\'" (< ASCII > | "" ) "\'" > { Tracine.token("CHAR", image.toString()); }
+}
+*/
+
+TOKEN:
+{ < QUOTE: "\'" > { Tracing.token("QUOTE", image.toString()); }
+| < DQUOTE: "\"" > { Tracing.token("DQUOTE", image.toString()); }
 }
 
 // = KEYWORDS must be defined before IDENTIFIER
 
 TOKEN:
-{ < BASIC_TYPE: "bool" | "char" | "double" | "float" | "int" | "string" > { Tracing.token("TYPE", image.toString()); }
+{ < BASIC_TYPE: "bool" | "char" | "double" | "float" | "long" | "int" | "string" > { Tracing.token("TYPE", image.toString()); }
+| < SIGN: "unsigned" | "signed" > { Tracing.token("SIGN", image.toString()); }
+| < PRE_TYPE: "long" | "short" > { Tracing.token("PRE_TYPE", image.toString()); }
 }
 
 TOKEN:
@@ -99,20 +109,15 @@ TOKEN:
 
 TOKEN: {< #DIGIT: ["0"-"9"] >}
 
+// ASCII
+TOKEN: { < #ASCII: [" "-"["] | ["]"-"~"] | "\\" > }
+
 TOKEN:
 {
   < FLOAT : (< DIGIT >)+  < DOT >  (< DIGIT >)*
 | 			(< DIGIT >)*  < DOT >  (< DIGIT >)+ > { Tracing.token("FLOAT", image.toString()); }
-|  <  INTEGER: 	// TODO à modifier
-(<DIGIT>)+ 
- > { Tracing.token("INTEGER", image.toString()); }
+|  <  INTEGER: (<DIGIT>)+ > { Tracing.token("INTEGER", image.toString()); }
 }
-  
-	// TODO à modifier
-
-TOKEN:
-{ <TODO_INFO3: "TODO INFO3" > }
-
 
 // = IDENTIFIER : GIVEN
 
@@ -268,7 +273,7 @@ Tree opt_ASSIGNMENT(int d, Tree lhs) :
    Tree r;
 }
 {
-  token = < ASSIGN >
+  token = < BINASSIGN >
   rhs = EXPR(d+1)
   {
     return new Assign(lhs, token.toString(), rhs); }
@@ -327,8 +332,7 @@ Tree EXPR(int d) :
 { 
   t = E1(d+1)
   r = opt_BINOP_EXPR(d+1, t)
-    {
- // TODO à modifier
+    { // TODO à modifier
  {return r;}
 }
 | 
@@ -514,6 +518,17 @@ Tree WHILETE(int d):
 	//while(t) {  te ;}
 	return te;
 	  }
+}
+
+Tree STRING(int d):
+{
+  Tracing.call(d,"STRING");
+  Tree t;
+}
+{
+  < QUOTE >
+  t = (< ASCII >)*
+  < QUOTE >
 }
 
 
