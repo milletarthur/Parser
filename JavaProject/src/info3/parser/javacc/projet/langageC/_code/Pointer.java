@@ -1,12 +1,12 @@
 package info3.parser.javacc.projet.langageC._code;
 
-public class Address extends Tree implements ITree {
+public class Pointer extends Tree implements ITree {
 
 	Tree location;
 
 	// CONSTRUCTOR
 
-	public Address(Tree t) {
+	public Pointer(Tree t) {
 		this.location = t;
 	}
 

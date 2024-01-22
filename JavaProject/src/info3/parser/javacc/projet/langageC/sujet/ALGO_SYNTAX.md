@@ -47,7 +47,7 @@ E1 ::=
     | VALUE
     | IDENT . opt_E1
     | PRE_POST_OP . IDENT
-    | PTR . IDENT
+    | (PTR)* . IDENT
     | FUNCTION
 
 FUNCTION ::= IDENT . "(" . (epsilon | ARGS) . ")"

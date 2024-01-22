@@ -56,11 +56,10 @@ TOKEN:
 }
 
 TOKEN:
-{ < PTR  : "*" >  { Tracing.token("PTR", image.toString()); }
+{ < PTR  : "*" | "&" >  { Tracing.token("PTR", image.toString()); }
 | < PRE_POST_OP : "++" | "--" | "!">  { Tracing.token("PRE_POST_OP", image.toString()); }
-| < BINOP  : "/" | "*" | "!=" | "==" | "|" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>" > { Tracing.token("BINOP", image.toString()); }
+| < BINOP  : "/" | "*" | "!=" | "==" | "|" | "&" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>" > { Tracing.token("BINOP", image.toString()); }
 | < BINASSIGN : "=" | ":=" | "+=" | "-=" | "*=" | "&="  | "|=" | "<<=" | ">>=" >  { Tracing.token("ASSIGN", image.toString()); }
-| < ADDR : "&" >  { Tracing.token("ADDR", image.toString()); }
 }
 
 TOKEN:
@@ -72,12 +71,10 @@ TOKEN:
 | < RPAR    : ")" > { Tracing.token("RPAR", image.toString()); }
 }
 
-/*
 TOKEN:
 { < STRING : "\"" (< ASCII >)* "\"" > {  Tracing.token("STRING", image.toString()); }
-| < CHAR: "\'" (< ASCII > | "" ) "\'" > { Tracine.token("CHAR", image.toString()); }
+| < CHAR: "\'" ("" | < ASCII >) "\'" > { Tracine.token("CHAR", image.toString()); }
 }
-*/
 
 TOKEN:
 { < QUOTE: "\'" > { Tracing.token("QUOTE", image.toString()); }
@@ -369,9 +366,28 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
 	< RBRACKET >
 	{ return null; }
 | /*epsilon*/
-    { return left; }     		
+    { return left; }
 }
 
+Tree E1(int d) :
+{
+  Tree
+
+// opt_E1 ::=
+//   | PRE_POST_OP
+//   | ("[" . EXPR . "]")*
+Tree opt_E1(int d) :
+{
+  Tree t;
+}
+{
+  < PRE_POST_OP >
+  { return null; }
+| < LBRACKET >
+  t = EXPR(d+1)
+  < RBRACKET >
+  { return t; }
+}
 
 // String BINOP ::=
 //    | <BINOP>
@@ -388,10 +404,6 @@ String BINOP(int d) :
     return token.toString(); }
 |
   token = < PTR >
-  {
-    return token.toString(); }
-|
-  token = < ADDR >
   {
     return token.toString(); }
 }    
@@ -434,9 +446,11 @@ Tree VALUE(int d) :
  {t = new Value(token.toString());
  return t;}
 | token = < STRING >
- // TODO à modifier
- {t = new Value(token.toString());
+ { t = new Value(token.toString());
  return t;}
+| token = < CHAR >
+ { t = new Value(token.toString());
+ return t; }
 }
 
 
@@ -461,10 +475,7 @@ Tree E1(int d) :
     { return t; }
 | < PTR >
 	t = EXPR(d+1)
-	{ return new Deref(t); }
-| < ADDR >
-	t = EXPR(d+1)
-{ return new Address(t); }
+	{ return new Pointer(t); }
 | token = < PRE_POST_OP >
 	t = EXPR(d+1)
 { return PreUnop(token.toString(), t); }
@@ -519,16 +530,4 @@ Tree WHILETE(int d):
 	return te;
 	  }
 }
-
-Tree STRING(int d):
-{
-  Tracing.call(d,"STRING");
-  Tree t;
-}
-{
-  < QUOTE >
-  t = (< ASCII >)*
-  < QUOTE >
-}
-
 
