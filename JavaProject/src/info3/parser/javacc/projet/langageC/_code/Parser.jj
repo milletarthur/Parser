@@ -209,7 +209,9 @@ Tree STATEMENT(int d) :
   Tree t;
 }
 {
-  t = DECL(d+1)
+  t = ASSIGNMENT(d+1)
+  { return t; }
+| t = DECL(d+1)
    { return t;  }
 | t = RETURN(d+1)
    { return t;  }
@@ -251,7 +253,6 @@ Tree DECL(int d):
       { arrays.add(a); }
     )*
   )
-  < SEMICOL >
   { return new Decl(token.toString(), t, arrays); }
 }
 
@@ -266,6 +267,7 @@ Tree ASSIGNMENT(int d) :
 {
    lhs = EXPR(d)
    rhs = opt_ASSIGNMENT(d, lhs)
+   < SEMICOL >
    {
      return rhs;
    }
