@@ -13,10 +13,11 @@ public class Return extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
-		// TODO à modifier
-		{
-			return null;
-		}
+		String string = new String();
+		string += Pretty.identifier(format, "return");
+		string += expr.pretty(d);
+		string += Pretty.identifier(format, ";");
+		return string;
 	}
 
 	// CFG
