@@ -7,6 +7,7 @@ public class Block extends Tree implements ITree {
 	// CONSTRUCTOR
 
 	public Block(Tree t) {
+		this.sequence = t;
 	}
 
 	// PREDICATE
@@ -23,9 +24,11 @@ public class Block extends Tree implements ITree {
 	public String pretty(int d) {
 		String string = new String();
 		if (sequence.isEmpty()) {
-			// TODO à compléter
+			return string;
 		} else {
-			// TODO à compléter
+			string += Pretty.string(format, "{");
+			string += sequence.pretty(d);
+			string += Pretty.string(format, "}");
 		}
 		return string;
 	}

@@ -186,12 +186,11 @@ Tree SEQUENCE(int d):
 }
 { 	// TODO à modifier
 
+  (
     t = STATEMENT(d+1)
-    SEQUENCE(d)
+    { trees.add(t); }
+  )*
   { return new Sequence(trees); }
-
-| /* epsilon */
-  {  return null; }
 }
 
 
@@ -207,13 +206,10 @@ Tree SEQUENCE(int d):
 Tree STATEMENT(int d) :
 {
   Tracing.call(d, "STATEMENT");
-  Tree t,r;
+  Tree t;
 }
 {
-  	// TODO à modifier
-  t = ASSIGNMENT(d+1)
-   { return t;  }
-| t = DECL(d+1)
+  t = DECL(d+1)
    { return t;  }
 | t = RETURN(d+1)
    { return t;  }
@@ -232,13 +228,31 @@ Tree DECL(int d):
   Tracing.call(d,"DECLARATION");
   Token token;
   Tree t;
+  Tree a=null;
+  ArrayList<Tree> arrays = new ArrayList<Tree>();
 }
 {
   // TODO
   token = < BASIC_TYPE >
-  t = ASSIGNMENT(d+1)
-  // < SEMICOL > enlevé car déjà dans ASSIGNMENT
-  { return new Decl(token.toString(), t); }
+  (
+    (
+      < LBRACKET >
+      a = EXPR(d+1)
+      < RBRACKET >
+      { arrays.add(a); }
+    )*
+    t = ASSIGNMENT(d+1)
+  |
+  	t = ASSIGNMENT(d+1)
+  	(
+      < LBRACKET >
+      a = EXPR(d+1)
+      < RBRACKET >
+      { arrays.add(a); }
+    )*
+  )
+  < SEMICOL >
+  { return new Decl(token.toString(), t, arrays); }
 }
 
 // ASSIGNMENT ::= EXPR . opt_ASSIGNMENT
@@ -252,7 +266,6 @@ Tree ASSIGNMENT(int d) :
 {
    lhs = EXPR(d)
    rhs = opt_ASSIGNMENT(d, lhs)
-  < SEMICOL >
    {
      return rhs;
    }
@@ -306,7 +319,7 @@ Tree opt_ELSE(int d) :
 {
 	<ELSE>
   	te = BLOCK(d+1)
-	{ return te; }
+	{ return new Block(te); }
 | /*epsilon*/
 	{ return null; }
 }
@@ -446,39 +459,41 @@ Tree E1(int d) :
 {
 	Tracing.call(d, "E1");
   Tree t;
+  Token token;
 }
 {
   t = VALUE(d+1)
-  opt_PRE_POST_OP(d+1)
+  t = opt_POST_OP(d+1, t)
   {return t; }
 | t = IDENTIFIER(d+1)
-  opt_PRE_POST_OP(d+1)
+  t = opt_POST_OP(d+1, t)
   //<TODO_INFO3>
-    { return null; }
+    { return t; }
 | < PTR >
-	EXPR(d+1)
-	{ return null; }
+	t = EXPR(d+1)
+	{ return new Deref(t); }
 | < ADDR >
-	EXPR(d+1)
-{ return null; }
-| < PRE_POST_OP >
-	EXPR(d+1)
-{ return null; }
+	t = EXPR(d+1)
+{ return new Address(t); }
+| token = < PRE_POST_OP >
+	t = EXPR(d+1)
+{ return PreUnop(token.toString(), t); }
 
 }
 
 // opt_PRE_POST_OP ::= PRE_POST_OP | epsilon
-Tree opt_PRE_POST_OP(int d) :
+Tree opt_POST_OP(int d, Tree lhs) :
 {
   Tracing.call(d, "opt_PRE_POST_OP");
+  Token token;
 }
 {
-  < PRE_POST_OP >
+  token = < PRE_POST_OP >
   {
-    return null; }
+    return new PostUnop(lhs, token.toString()); }
 | /* epsilon */
 {
-  return null; } 
+  return lhs; } 
 }
 
 Tree RETURN(int d) :

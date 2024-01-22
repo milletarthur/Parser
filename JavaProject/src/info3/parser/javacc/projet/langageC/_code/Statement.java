@@ -14,10 +14,10 @@ public class Statement extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
-		// TODO à modifier
-		{
-			return null;
-		}
+		String string = new String();
+		string += expr.pretty(d);
+		return string;
+		// TODO voir référence parseur
 	}
 
 	// CFG
