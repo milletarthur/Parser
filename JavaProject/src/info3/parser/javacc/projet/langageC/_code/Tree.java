@@ -54,7 +54,11 @@ public class Tree implements ITree {
 
 	// TODO INFO3 : to be overriden in each subclass
 	public String pretty(int indentation) {
-		return "pretty: not implemented";
+		String str = "";
+		for (int i = 0; i < indentation; i++) {
+			str += "    ";
+		}
+		return str;
 	}
 
 	String pretty() {
