@@ -149,7 +149,7 @@ Algorithm parse():
   <EOF>
   	{
   	  a = new Algorithm(token.toString(), t);
-  	  Tracing.parsed(0, "PARSER", "\n");
+  	  // Tracing.parsed(0, "PARSER", "\n");
   	  return a;
   	 }
 }
@@ -180,8 +180,7 @@ Tree SEQUENCE(int d):
   Tree t;
   ArrayList<Tree > trees = new ArrayList<Tree>();
 }
-{ 	// TODO à modifier
-
+{
   (
     t = STATEMENT(d+1)
     { trees.add(t); }
@@ -203,20 +202,22 @@ Tree STATEMENT(int d) :
   Tree t;
 }
 {
-  	// TODO à modifier
-  t = ASSIGNMENT(d+1)
-   { return new Assign(t);  }
-| t = DECL(d+1)
-   { return new Decl(t);  }
+  t = DECL(d+1)
+  <SEMICOL>
+   { return new Decl(t); }
+| t = EXPR(d+1)
+  <SEMICOL>
+  { return new Expr(t); }
+| t = ASSIGNMENT(d+1)
+  <SEMICOL>
+   { return new Assign(t); }
 | t = RETURN(d+1)
-   { return new Return(t);  }
+  <SEMICOL>
+   { return new Return(t); }
 | t = IFTE(d+1)
-   { return new Ifte(t);  }
+   { return new Ifte(t); }
 | t = WHILEDO(d+1)
- // Tester RETURN, IFTE et WHILETE avec EXPR
-    { return new While(t); }
-  
-	// TODO à compléter
+   { return new While(t); }
 }
 
 // RETURN ::= "return" . EXPR
@@ -228,39 +229,30 @@ Tree RETURN(int d) :
 {
   <RETURN>
   t = EXPR(d)
-  <SEMICOL>
-  // TODO à compléter
   {
-    return t;
+    return new Return(t);
   }
 }
 
-// == Les expressions en C ==
-//  Exemples : 1, x, e+e, f(e), (e), *e, e[e], ..., *(e(e)[e])
-
-// == GIVEN ==
 // EXPR ::= "(" . EXPR . ")" . opt_BINOP_EXPR
-//		   | opt_PRE_POST_OP . E1 . opt_PRE_POST_OP . opt_BINOP_EXPR
+//		   | opt_PRE_POST_OP . E1 . opt_BINOP_EXPR
 Tree EXPR(int d) :
 {
   Tracing.call(d, "EXPR");
-  Tree t,r;
+  Tree t,r,s;
 }
-{ 
-  t = E1(d+1)
+{
+  < LPAR >
+  t = EXPR(d+1)
+  < RPAR >
   r = opt_BINOP_EXPR(d+1, t)
-    { // TODO à modifier
- {return r;}
-}
-| 
-	< LPAR >
-	t = EXPR(d+1)
-	< RPAR >
-	r = opt_BINOP_EXPR(d+1, t)
-	{ return r; }
+  { return new Expr(r); }
+| t = opt_PRE_POST_OP(d+1, null)
+  r = E1(d+1, t)
+  s = opt_BINOP_EXPR(d+1, r)
+  { return new Expr(u); }
 }
 
-// == GIVEN == 
 // Tree opt_BINOP_EXPR ::=
 //    | BINOP . EXPR
 //    | epsilon
@@ -271,22 +263,16 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
   Tree right;
 }
 {
-  binop = BINOP(d+1)
+  //binop = BINOP(d+1)
+  binop = <BINOP>
   right = EXPR(d+1)
-    {
- // TODO à modifier
- {return new Binop(left, binop, right);}
-}
-|
-	< LBRACKET >
-	EXPR(d+1)
-	< RBRACKET >
-	{ return null; }
+  { //return new Binop(left, binop, right); }
+  return new Binop(left, binop.toString(), right); }
 | /*epsilon*/
     { return left; }
 }
 
-// ASSIGNMENT ::= <IDENTIFIER> . opt_ASSIGNMENT 
+// ASSIGNMENT ::= IDENTIFIER . opt_ASSIGNMENT 
 Tree ASSIGNMENT(int d) :
 {
    Tracing.call(d,"ASSIGNMENT");
@@ -295,12 +281,9 @@ Tree ASSIGNMENT(int d) :
    Tree lhs;
 }
 {
-   lhs = EXPR(d)
-   rhs = opt_ASSIGNMENT(d, lhs)
-  < SEMICOL >
-   {
-     return rhs;
-   }
+   lhs = IDENTIFIER(d+1)
+   rhs = opt_ASSIGNMENT(d+1, lhs)
+   { return rhs; }
 }
 
 // opt_ASSIGNMENT ::= 	BINASSIGN . EXPR
@@ -313,32 +296,37 @@ Tree opt_ASSIGNMENT(int d, Tree lhs) :
    Tree r;
 }
 {
-  token = < BINASSIGN >
+  token = <BINASSIGN>
   rhs = EXPR(d+1)
-  {
-    return new Assign(lhs, token.toString(), rhs); }
+  { return new Assign(lhs, token.toString(), rhs); }
 |  /* epsilon */
- {return lhs;}
+  { return lhs; }
 }
 
-// DECL ::= SIGN . PRE_TYPE . TYPE . <IDENTIFIER> . opt_DECL . ("," . <IDENTIFIER> . opt_DECL)*
+// DECL ::= opt_SIGN . opt_PRE_TYPE . BASIC_TYPE . IDENTIFIER . opt_DECL . ("," . IDENTIFIER . opt_DECL)*
 Tree DECL(int d):
 {
   Tracing.call(d,"DECLARATION");
   Token token;
-  Tree t;
+  Tree t, r;
+  String s,s2;
 }
 {
-  // TODO
-  token = < BASIC_TYPE >
-  t = ASSIGNMENT(d+1)
-  // < SEMICOL > enlevé car déjà dans ASSIGNMENT
+  s = opt_SIGN(d+1)
+  s2 = opt_PRE_TYPE(d+1, s)
+  token = <BASIC_TYPE>
+  t = IDENTIFIER(d+1)
+  r = opt_DECL(d+1, t)
+  ( //TODO gérer le truc de l'étoile (voir SEQUENCE pour savoir comment faire)
+    < COMMA >
+    IDENTIFIER(d+1) //TODO Tree var = IDE
+    opt_DECL(d+1,__) //TODO Tree varbis = opt_DECL(d+1,var)  )*
   { return new Decl(token.toString(), t); }
 }
 
 //opt_DECL ::= epsilon
 // 			 | BINASSIGN . EXPR
-Tree opt_DECL(int d) :
+Tree opt_DECL(int d, tree rhs) :
 {
 }
 {
@@ -398,11 +386,11 @@ Tree WHILEDO(int d):
 	  }
 }
 
-// E1 ::=  VALUE
-//		| <IDENTIFIER>
-//		| (PTR)+ . <IDENTIFIER>
-//		| FUNCTION
-Tree E1(int d) :
+// E1 ::=  VALUE . opt_POST_OP
+//		| <IDENTIFIER> . opt_POST_OP
+//		| (PTR)+ . <IDENTIFIER> . opt_POST_OP
+//		| FUNCTION . opt_POST_OP
+Tree E1(int d) : //TODO return type new E1();
 {
 	Tracing.call(d, "E1");
   Tree t;
@@ -452,7 +440,7 @@ Tree opt_ARGS(int d) :
 
 // opt_PRE_POST_OP ::= PRE_POST_OP
 //					 | ("[" . EXPR . "]")*
-Tree opt_PRE_POST_OP(int d) :
+Tree opt_PRE_POST_OP(int d, Tree right) :
 {
 }
 {
@@ -510,13 +498,13 @@ String opt_SIGN(int d) :
 }
 
 //PRE_TYPE ::= "long" | "short" | epsilon
-String opt_PRE_TYPR(int d) :
+String opt_PRE_TYPE(int d, string s) :
 {
   Token token;
 }
 {
   token = <PRE_TYPE>
-  { return token.toString(); }
+  { return s + token.toString(); }
 | //epsilon
   { return null; }
 }
