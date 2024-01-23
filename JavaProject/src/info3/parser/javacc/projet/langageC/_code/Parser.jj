@@ -212,7 +212,7 @@ Tree STATEMENT(int d) :
    { return new Return(t);  }
 | t = IFTE(d+1)
    { return new Ifte(t);  }
-| t = WHILETE(d+1)
+| t = WHILEDO(d+1)
  // Tester RETURN, IFTE et WHILETE avec EXPR
     { return new While(t); }
   
@@ -286,7 +286,7 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
     { return left; }
 }
 
-// ASSIGNMENT ::= IDENT . opt_ASSIGNMENT 
+// ASSIGNMENT ::= <IDENTIFIER> . opt_ASSIGNMENT 
 Tree ASSIGNMENT(int d) :
 {
    Tracing.call(d,"ASSIGNMENT");
@@ -321,7 +321,7 @@ Tree opt_ASSIGNMENT(int d, Tree lhs) :
  {return lhs;}
 }
 
-// DECL ::= SIGN . PRE_TYPE . TYPE . IDENT . opt_DECL . ("," . IDENT . opt_DECL)*
+// DECL ::= SIGN . PRE_TYPE . TYPE . <IDENTIFIER> . opt_DECL . ("," . <IDENTIFIER> . opt_DECL)*
 Tree DECL(int d):
 {
   Tracing.call(d,"DECLARATION");
@@ -399,8 +399,8 @@ Tree WHILEDO(int d):
 }
 
 // E1 ::=  VALUE
-//		| IDENT
-//		| (PTR)+ . IDENT
+//		| <IDENTIFIER>
+//		| (PTR)+ . <IDENTIFIER>
 //		| FUNCTION
 Tree E1(int d) :
 {
@@ -425,7 +425,7 @@ Tree E1(int d) :
 
 }
 
-// FUNCTION ::= IDENT . "(" . (epsilon | ARGS) . ")"
+// FUNCTION ::= <IDENTIFIER> . "(" . (epsilon | ARGS) . ")"
 Tree FUNCTION(int d) :
 {
 }
@@ -465,85 +465,13 @@ Tree opt_PRE_POST_OP(int d) :
 }
 
 
-//PRE_POST_OP ::= "++" | "--" | "!"
-
-//PTR ::= "*" | "&"
-
-//IDENT ::= (LOWERCASE | UPPERCASE | "_")+ . (LOWERCASE | UPPERCASE | "_" | DIGIT)*
-
-//VALUE ::=
-//| INTEGER
-//| FLOAT
-//| CHAR
-//| STRING
-//| BOOLEAN
-
-//INTEGER ::= (DIGIT)+
-
-//FLOAT ::=
-//| (DIGIT)+ . "." . (DIGIT)*
-//| (DIGIT)* . "." . (DIGIT)+
-
-//CHAR ::= "'" . (ASCII)* . "'"
-
-//STRING ::= """ . (ASCII)* . """
-
-//ASCII ::= All characters in the ASCII table !! WITH "\\" AND NOT "\" !!
-
-//BOOLEAN ::= "true" | "false"
-
-//BINOP ::= "/" | "!=" | "==" | "|" | "+" | "-" | "*" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>"
-
-//BINASSIGN ::= "=" | ":=" | "+=" | "-=" | "*=" | "&="
-
-//TYPE ::=
-//| "bool"
-//| "int"
-//| "char"
-//| "string"
-//| "long"
-//| "double"
-//| "float"
-
-//SIGN ::= "unsigned" | "signed" | epsilon
-
-//PRE_TYPE ::= "long" | "short" | epsilon
-
-// BINOP ::= "/" | "!=" | "==" | "|" | "+" | "-" | "*" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>"
-String BINOP(int d) :
-{
-  Token token;
-}
-{
-  token = < BINOP >
-  {
-    return token.toString(); }
-|
-  token = < PTR >
-  {
-    return token.toString(); }
-}    
-
-
-// == GIVEN ==
-// Tree IDENTIFIER ::= <IDENTIFIER>
-
-Tree IDENTIFIER(int d) :
-{
-  Tracing.call(d,"IDENTIFIER");
-  Token token;
-}
-{ token = <IDENTIFIER>
-    { return new Ident(token.toString()); }
-}
-
-
 // Tree VALUE ::=
 //    | <INTEGER>
-//    | <BOOL>
+//    | <BOOLEAN>
 //    | <STRING>
 //    | <FLOAT>
 //    | <DOUBLE>
+//    | <CHAR>
 
 Tree VALUE(int d) :
 {
@@ -569,26 +497,50 @@ Tree VALUE(int d) :
  return t; }
 }
 
-
-
-
-
-// opt_PRE_POST_OP ::= PRE_POST_OP | epsilon
-Tree opt_POST_OP(int d, Tree lhs) :
+//SIGN ::= "unsigned" | "signed" | epsilon
+String opt_SIGN(int d) :
 {
-  Tracing.call(d, "opt_PRE_POST_OP");
   Token token;
 }
 {
-  token = < PRE_POST_OP >
-  {
-    return new PostUnop(lhs, token.toString()); }
-| /* epsilon */
+  token = <SIGN>
+  { return token.toString(); }
+| //epsilon
+  { return null; }
+}
+
+//PRE_TYPE ::= "long" | "short" | epsilon
+String opt_PRE_TYPR(int d) :
 {
-  return lhs; } 
+  Token token;
+}
+{
+  token = <PRE_TYPE>
+  { return token.toString(); }
+| //epsilon
+  { return null; }
+}
+
+// == GIVEN ==
+// Tree IDENTIFIER ::= <IDENTIFIER>
+Tree IDENTIFIER(int d) :
+{
+  Tracing.call(d,"IDENTIFIER");
+  Token token;
+}
+{ token = <IDENTIFIER>
+    { return new Ident(token.toString()); }
 }
 
 
-
-
-
+//String BINOP(int d) :
+//{
+//  Token token;
+//}
+//{
+//  token = < BINOP >
+//  { return token.toString(); }
+//|
+//  token = < PTR >
+//  { return token.toString(); }
+//}    
