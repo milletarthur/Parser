@@ -47,7 +47,7 @@ SKIP:
 
 SKIP:
 { < SPACE: " " | "\t" | "\n" | "\r" > // { Tracing.token("SPACE", image.toString()); }
-}  
+}
 
 TOKEN:
 { < SEMICOL: ";" > { Tracing.token("SEMICOL", image.toString()); }
@@ -72,8 +72,8 @@ TOKEN:
 }
 
 TOKEN:
-{ < STRING : "\"" (< ASCII >)* "\"" > {  Tracing.token("STRING", image.toString()); }
-| < CHAR: "\'" ("" | < ASCII >) "\'" > { Tracine.token("CHAR", image.toString()); }
+{ < STRING : < DQUOTE > (~["\\"])* < DQUOTE > > {  Tracing.token("STRING", image.toString()); }
+| < CHAR: < QUOTE > (~["\\"])* < QUOTE > > { Tracine.token("CHAR", image.toString()); }
 }
 
 TOKEN:
@@ -97,7 +97,6 @@ TOKEN:
 | < RETURN: "return" > { Tracing.token("RETURN", image.toString()); }
 }
 
-
 TOKEN:
 { < BOOLEAN: "true" | "false" > { Tracing.token("BOOLEAN", image.toString()); }
 }  
@@ -105,9 +104,6 @@ TOKEN:
 // = NUMERIC
 
 TOKEN: {< #DIGIT: ["0"-"9"] >}
-
-// ASCII
-TOKEN: { < #ASCII: [" "-"["] | ["]"-"~"] | "\\" > }
 
 TOKEN:
 {

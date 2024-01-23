@@ -20,8 +20,8 @@ STATEMENT ::=
 RETURN ::= "return" . EXPR
 
 EXPR ::=
-    | "(" . EXPR . ")"
-    | E1 . opt_BINOP_EXPR
+    | "(" . EXPR . ")" . opt_BINOP_EXPR
+    | opt_PRE_POST_OP . E1 . opt_PRE_POST_OP . opt_BINOP_EXPR
 
 opt_BINOP_EXPR ::=
     | epsilon
@@ -45,9 +45,8 @@ WHILEDO ::= "while"  . "(" . EXPR . ")" . BLOCK
 
 E1 ::=
     | VALUE
-    | IDENT . opt_E1
-    | PRE_POST_OP . IDENT
-    | (PTR)* . IDENT
+    | IDENT
+    | (PTR)+ . IDENT
     | FUNCTION
 
 FUNCTION ::= IDENT . "(" . (epsilon | ARGS) . ")"
@@ -58,7 +57,7 @@ opt_ARGS ::=
     | epsilon
     | "," . ARGS
 
-opt_E1 ::=
+opt_PRE_POST_OP ::=
     | PRE_POST_OP
     | ("[" . EXPR . "]")*
 
@@ -81,7 +80,7 @@ FLOAT ::=
     | (DIGIT)+ . "." . (DIGIT)*
     | (DIGIT)* . "." . (DIGIT)+
 
-CHAR ::= "'" . (ASCII | epsilon) . "'"
+CHAR ::= "'" . (ASCII)* . "'"
 
 STRING ::= """ . (ASCII)* . """
 
