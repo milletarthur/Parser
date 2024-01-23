@@ -133,7 +133,6 @@ TOKEN:
 
 // GIVEN
 // SEED = parse ::= "ALGORITHM" . "(" . <IDENTIFIER> . ")" . BLOCK . <EOF>
-
 Algorithm parse():
 {
   Tracing.call(0, "PARSER");
@@ -156,7 +155,7 @@ Algorithm parse():
 }
 
 
-// BLOCK ::= { . SEQUENCE . }
+// BLOCK ::= "{" . SEQUENCE . "}"
 Tree BLOCK(int d):
 {
    Tracing.call(d, "BLOCK");
@@ -175,7 +174,6 @@ Tree BLOCK(int d):
 
 
 // SEQUENCE ::= ( STATEMENT )*
-
 Tree SEQUENCE(int d):
 {
   Tracing.call(d, "SEQUENCE");
@@ -193,14 +191,12 @@ Tree SEQUENCE(int d):
 
 
 // STATEMENT ::=
-//  | DECL
-//  | EXPR <SEMICOL> \__  EXPR . opt_ASSIGNMENT <SEMICOL>
-//  | ASSIGNMENT        /
-//  | RETURN
-//  | IFTE  	// TODO à compléter
+//  | DECL . ";"
+//  | EXPR . ";"
+//  | ASSIGNMENT . ";"
+//  | RETURN . ";"
+//  | IFTE
 //	| WHILETE
-
-
 Tree STATEMENT(int d) :
 {
   Tracing.call(d, "STATEMENT");
@@ -221,102 +217,30 @@ Tree STATEMENT(int d) :
     { return new While(t); }
   
 	// TODO à compléter
-
 }
 
-Tree DECL(int d):
+// RETURN ::= "return" . EXPR
+Tree RETURN(int d) :
 {
-  Tracing.call(d,"DECLARATION");
-  Token token;
+  Tracing.call(d, "RETURN");
   Tree t;
 }
 {
-  // TODO
-  token = < BASIC_TYPE >
-  t = ASSIGNMENT(d+1)
-  // < SEMICOL > enlevé car déjà dans ASSIGNMENT
-  { return new Decl(token.toString(), t); }
-}
-
-// ASSIGNMENT ::= EXPR . opt_ASSIGNMENT
-Tree ASSIGNMENT(int d) :
-{
-   Tracing.call(d,"ASSIGNMENT");
-   Token token;
-   Tree rhs;
-   Tree lhs;
-}
-{
-   lhs = EXPR(d)
-   rhs = opt_ASSIGNMENT(d, lhs)
-  < SEMICOL >
-   {
-     return rhs;
-   }
-}
-
-// opt_ASSIGNMENT ::= 	'=' . EXPR
-//				|        epsilon
-
-Tree opt_ASSIGNMENT(int d, Tree lhs) :
-{
-   Tracing.call(d,"ASSIGNMENT");
-   Tree rhs ;
-   Token token;
-   Tree r;
-}
-{
-  token = < BINASSIGN >
-  rhs = EXPR(d+1)
+  <RETURN>
+  t = EXPR(d)
+  <SEMICOL>
+  // TODO à compléter
   {
-    return new Assign(lhs, token.toString(), rhs); }
-|  /* epsilon */
- {return lhs;}
+    return t;
+  }
 }
-
-
-// IFTE ::= <IF> . "(" . EXPR . ")" . BLOCK . opt_ELSE
-
-Tree IFTE(int d) :
-{
-   Tracing.call(d, "IFTE");
-   Tree tc,tt,te;
-}
-{
-  <IF>
-  <LPAR>
-  tc = EXPR(d+1)
-  <RPAR>
-  tt = BLOCK(d+1)
-  te = opt_ELSE(d+1)
-{
-  return new Ifte(tc, tt, te);
-}
-}
-
-// opt_ELSE ::= <ELSE> . BLOCK | epsilon
-Tree opt_ELSE(int d) :
-{
-	Tracing.call(d, "opt_ELSE");
-	Tree te;
-}
-{
-	<ELSE>
-  	te = BLOCK(d+1)
-	{ return new Block(te); }
-| /*epsilon*/
-	{ return null; }
-}
-
 
 // == Les expressions en C ==
-//  Exemples : 1, x, e+e, f(e), (e), *e, e[e], ..., *(e(e)[e]) 
-
+//  Exemples : 1, x, e+e, f(e), (e), *e, e[e], ..., *(e(e)[e])
 
 // == GIVEN ==
-// EXPR ::= E1 . opt_BINOP_EXPR
-//         | (. EXPR . ) . opt_BINOP_EXPR
-
+// EXPR ::= "(" . EXPR . ")" . opt_BINOP_EXPR
+//		   | opt_PRE_POST_OP . E1 . opt_PRE_POST_OP . opt_BINOP_EXPR
 Tree EXPR(int d) :
 {
   Tracing.call(d, "EXPR");
@@ -335,14 +259,11 @@ Tree EXPR(int d) :
 	r = opt_BINOP_EXPR(d+1, t)
 	{ return r; }
 }
-  
 
 // == GIVEN == 
 // Tree opt_BINOP_EXPR ::=
 //    | BINOP . EXPR
 //    | epsilon
-//    | [ EXPR ]
-
 Tree opt_BINOP_EXPR(int d, Tree left) :
 {
   Tracing.call(d, "opt_BINOP_EXPR");
@@ -365,31 +286,230 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
     { return left; }
 }
 
+// ASSIGNMENT ::= IDENT . opt_ASSIGNMENT 
+Tree ASSIGNMENT(int d) :
+{
+   Tracing.call(d,"ASSIGNMENT");
+   Token token;
+   Tree rhs;
+   Tree lhs;
+}
+{
+   lhs = EXPR(d)
+   rhs = opt_ASSIGNMENT(d, lhs)
+  < SEMICOL >
+   {
+     return rhs;
+   }
+}
+
+// opt_ASSIGNMENT ::= 	BINASSIGN . EXPR
+//				|        epsilon
+Tree opt_ASSIGNMENT(int d, Tree lhs) :
+{
+   Tracing.call(d,"ASSIGNMENT");
+   Tree rhs ;
+   Token token;
+   Tree r;
+}
+{
+  token = < BINASSIGN >
+  rhs = EXPR(d+1)
+  {
+    return new Assign(lhs, token.toString(), rhs); }
+|  /* epsilon */
+ {return lhs;}
+}
+
+// DECL ::= SIGN . PRE_TYPE . TYPE . IDENT . opt_DECL . ("," . IDENT . opt_DECL)*
+Tree DECL(int d):
+{
+  Tracing.call(d,"DECLARATION");
+  Token token;
+  Tree t;
+}
+{
+  // TODO
+  token = < BASIC_TYPE >
+  t = ASSIGNMENT(d+1)
+  // < SEMICOL > enlevé car déjà dans ASSIGNMENT
+  { return new Decl(token.toString(), t); }
+}
+
+//opt_DECL ::= epsilon
+// 			 | BINASSIGN . EXPR
+Tree opt_DECL(int d) :
+{
+}
+{
+  //TODO
+  { return null; }
+}
+
+// IFTE ::= "if" . "(" . EXPR . ")" . (BLOCK | EXPR . ";") . opt_ELSE
+Tree IFTE(int d) :
+{
+   Tracing.call(d, "IFTE");
+   Tree tc,tt,te;
+}
+{
+  <IF>
+  <LPAR>
+  tc = EXPR(d+1)
+  <RPAR>
+  tt = BLOCK(d+1)
+  te = opt_ELSE(d+1)
+{
+  return new Ifte(tc, tt, te);
+}
+}
+
+// opt_ELSE ::= epsilon
+// 			  | "else" . (BLOCK | EXPR . ";")
+Tree opt_ELSE(int d) :
+{
+	Tracing.call(d, "opt_ELSE");
+	Tree te;
+}
+{
+	<ELSE>
+  	te = BLOCK(d+1)
+	{ return new Block(te); }
+| /*epsilon*/
+	{ return null; }
+}
+
+// WHILEDO ::= "while" . "(" . EXPR . ")" . BLOCK
+Tree WHILEDO(int d):
+{
+	Tracing.call(d,"WHILE");
+	Tree t,te;
+}
+{
+  	<WHILE>
+  	<LPAR>
+  	t = EXPR(d+1)
+  	<RPAR>
+  	te = BLOCK(d+1)
+  	
+	{
+	//while(t) {  te ;}
+	return te;
+	  }
+}
+
+// E1 ::=  VALUE
+//		| IDENT
+//		| (PTR)+ . IDENT
+//		| FUNCTION
 Tree E1(int d) :
 {
-  Tree
-
-// opt_E1 ::=
-//   | PRE_POST_OP
-//   | ("[" . EXPR . "]")*
-Tree opt_E1(int d) :
-{
+	Tracing.call(d, "E1");
   Tree t;
+  Token token;
+}
+{
+  t = VALUE(d+1)
+  t = opt_POST_OP(d+1, t)
+  {return t; }
+| t = IDENTIFIER(d+1)
+  t = opt_POST_OP(d+1, t)
+  //<TODO_INFO3>
+    { return t; }
+| < PTR >
+	t = EXPR(d+1)
+	{ return new Pointer(t); }
+| token = < PRE_POST_OP >
+	t = EXPR(d+1)
+{ return PreUnop(token.toString(), t); }
+
+}
+
+// FUNCTION ::= IDENT . "(" . (epsilon | ARGS) . ")"
+Tree FUNCTION(int d) :
+{
+}
+{
+  { return null; }
+}
+
+// ARGS ::= EXPR . opt_ARGS
+Tree ARGS(int d) :
+{
+}
+{
+  { return null; }
+}
+
+// opt_ARGS ::= epsilon
+//			  | "," . ARGS
+Tree opt_ARGS(int d) :
+{
+}
+{
+  { return null; }
+}
+
+// opt_PRE_POST_OP ::= PRE_POST_OP
+//					 | ("[" . EXPR . "]")*
+Tree opt_PRE_POST_OP(int d) :
+{
 }
 {
   < PRE_POST_OP >
   { return null; }
-| < LBRACKET >
+| (< LBRACKET >
   t = EXPR(d+1)
-  < RBRACKET >
+  < RBRACKET >)*
   { return t; }
 }
 
-// String BINOP ::=
-//    | <BINOP>
-//    | <PTR>
-//    | <ADDR>
 
+//PRE_POST_OP ::= "++" | "--" | "!"
+
+//PTR ::= "*" | "&"
+
+//IDENT ::= (LOWERCASE | UPPERCASE | "_")+ . (LOWERCASE | UPPERCASE | "_" | DIGIT)*
+
+//VALUE ::=
+//| INTEGER
+//| FLOAT
+//| CHAR
+//| STRING
+//| BOOLEAN
+
+//INTEGER ::= (DIGIT)+
+
+//FLOAT ::=
+//| (DIGIT)+ . "." . (DIGIT)*
+//| (DIGIT)* . "." . (DIGIT)+
+
+//CHAR ::= "'" . (ASCII)* . "'"
+
+//STRING ::= """ . (ASCII)* . """
+
+//ASCII ::= All characters in the ASCII table !! WITH "\\" AND NOT "\" !!
+
+//BOOLEAN ::= "true" | "false"
+
+//BINOP ::= "/" | "!=" | "==" | "|" | "+" | "-" | "*" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>"
+
+//BINASSIGN ::= "=" | ":=" | "+=" | "-=" | "*=" | "&="
+
+//TYPE ::=
+//| "bool"
+//| "int"
+//| "char"
+//| "string"
+//| "long"
+//| "double"
+//| "float"
+
+//SIGN ::= "unsigned" | "signed" | epsilon
+
+//PRE_TYPE ::= "long" | "short" | epsilon
+
+// BINOP ::= "/" | "!=" | "==" | "|" | "+" | "-" | "*" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>"
 String BINOP(int d) :
 {
   Token token;
@@ -451,32 +571,7 @@ Tree VALUE(int d) :
 
 
 
-// E1 ::=  integer | variable | function | ...
 
-
-// Il faut implémenter les tree
-Tree E1(int d) :
-{
-	Tracing.call(d, "E1");
-  Tree t;
-  Token token;
-}
-{
-  t = VALUE(d+1)
-  t = opt_POST_OP(d+1, t)
-  {return t; }
-| t = IDENTIFIER(d+1)
-  t = opt_POST_OP(d+1, t)
-  //<TODO_INFO3>
-    { return t; }
-| < PTR >
-	t = EXPR(d+1)
-	{ return new Pointer(t); }
-| token = < PRE_POST_OP >
-	t = EXPR(d+1)
-{ return PreUnop(token.toString(), t); }
-
-}
 
 // opt_PRE_POST_OP ::= PRE_POST_OP | epsilon
 Tree opt_POST_OP(int d, Tree lhs) :
@@ -493,37 +588,7 @@ Tree opt_POST_OP(int d, Tree lhs) :
   return lhs; } 
 }
 
-Tree RETURN(int d) :
-{
-  Tracing.call(d, "RETURN");
-  Tree t;
-}
-{
-  <RETURN>
-  t = EXPR(d)
-  <SEMICOL>
-  // TODO à compléter
-  {
-    return t;
-  }
-}
 
-// WHILETE  = WHILE +"(" + EXPR + ")"
-Tree WHILETE(int d):
-{
-	Tracing.call(d,"WHILE");
-	Tree t,te;
-}
-{
-  	<WHILE>
-  	<LPAR>
-  	t = EXPR(d+1)
-  	<RPAR>
-  	te = BLOCK(d+1)
-  	
-	{
-	//while(t) {  te ;}
-	return te;
-	  }
-}
+
+
 
