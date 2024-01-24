@@ -419,12 +419,11 @@ Tree E1(int d) : //TODO return type new E1();
 	{ return t; }
 }
 
-// FUNCTION ::= <IDENTIFIER> . "(" . (epsilon | ARGS) . ")"
-Tree FUNCTION(int d) :
+// FUNCTION ::= IDENTIFIER . "(" . (epsilon | ARGS) . ")"
+Tree FUNCTION(int d) : //TODO impossible en javacc
 {
 }
 {
-  { return null; }
 }
 
 // ARGS ::= EXPR . opt_ARGS
