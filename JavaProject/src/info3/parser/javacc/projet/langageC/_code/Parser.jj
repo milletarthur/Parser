@@ -393,9 +393,10 @@ Tree WHILEDO(int d):
 	{ return new While(t,te); }
 }
 
+//TODO ambigüe
 // E1 ::=  VALUE . opt_PRE_POST_OP
-//		| <IDENTIFIER> . opt_PRE_POST_OP
-//		| (PTR)+ . <IDENTIFIER> . opt_PRE_POST_OP
+//		| IDENTIFIER . opt_PRE_POST_OP
+//		| (PTR)+ . IDENTIFIER . opt_PRE_POST_OP
 //		| FUNCTION . opt_PRE_POST_OP
 Tree E1(int d) : //TODO return type new E1();
 {
@@ -420,7 +421,7 @@ Tree E1(int d) : //TODO return type new E1();
 }
 
 // FUNCTION ::= IDENTIFIER . "(" . (epsilon | ARGS) . ")"
-Tree FUNCTION(int d) : //TODO impossible en javacc
+Tree FUNCTION(int d) :
 {
   Tree id, args = null;
 }
@@ -437,18 +438,26 @@ Tree FUNCTION(int d) : //TODO impossible en javacc
 // ARGS ::= EXPR . opt_ARGS
 Tree ARGS(int d) :
 {
+  Tree ex, args;
 }
 {
+  ex = EXPR(d+1)
+  args = opt_ARGS(d+1,ex)
   { return null; }
 }
 
 // opt_ARGS ::= epsilon
 //			  | "," . ARGS
-Tree opt_ARGS(int d) :
+Tree opt_ARGS(int d, Tree expr) :
 {
+  Tree arg;
 }
-{
-  { return null; }
+{ 
+  <COMMA>
+  arg = ARGS(d+1)
+  { return new Args(expr,arg); } //TODO créer Args.java
+| //espilon
+  { return expr; }
 }
 
 // opt_PRE_POST_OP ::= PRE_POST_OP
