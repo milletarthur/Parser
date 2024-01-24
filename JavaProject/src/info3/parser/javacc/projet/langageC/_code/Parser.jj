@@ -191,8 +191,7 @@ Tree SEQUENCE(int d):
 
 // STATEMENT ::=
 //  | DECL . ";"
-//  | EXPR . ";"
-//  | ASSIGNMENT . ";"
+//  | EXPR . opt_ASSIGNEMENT ";"
 //  | RETURN . ";"
 //  | IFTE
 //	| WHILETE
@@ -204,20 +203,18 @@ Tree STATEMENT(int d) :
 {
   t = DECL(d+1)
   <SEMICOL>
-   { return new Decl(t); }
-| t = EXPR(d+1) //TODO ambigüe
+   { return t; }
+| t = EXPR(d+1) 
+  t = opt_ASSIGNMENT(d+1, t)
   <SEMICOL>
-  { return new Expr(t); }
-| t = ASSIGNMENT(d+1)
-  <SEMICOL>
-   { return new Assign(t); }
+  { return t; }
 | t = RETURN(d+1)
   <SEMICOL>
-   { return new Return(t); }
+   { return t; }
 | t = IFTE(d+1)
-   { return new Ifte(t); }
+   { return t; }
 | t = WHILEDO(d+1)
-   { return new While(t); }
+   { return t; }
 }
 
 // RETURN ::= "return" . EXPR
@@ -247,10 +244,10 @@ Tree EXPR(int d) :
   < RPAR >
   r = opt_BINOP_EXPR(d+1, t)
   { return new Expr(r); }
-| t = opt_PRE_POST_OP(d+1, null)
-  r = E1(d+1, t)
+| t = opt_PRE_POST_OP(d+1)
+  r = E1(d+1)
   s = opt_BINOP_EXPR(d+1, r)
-  { return new Expr(s); }
+  { return new Expr(t,s); }
 }
 
 // Tree opt_BINOP_EXPR ::=
@@ -273,18 +270,18 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
 }
 
 // ASSIGNMENT ::= IDENTIFIER . opt_ASSIGNMENT 
-Tree ASSIGNMENT(int d) :
-{
-   Tracing.call(d,"ASSIGNMENT");
-   Token token;
-   Tree rhs;
-   Tree lhs;
-}
-{
-   lhs = IDENTIFIER(d+1)
-   rhs = opt_ASSIGNMENT(d+1, lhs)
-   { return rhs; }
-}
+//Tree ASSIGNMENT(int d) :
+//{
+//   Tracing.call(d,"ASSIGNMENT");
+//   Token token;
+//   Tree rhs;
+//   Tree lhs;
+//}
+//{
+//   lhs = IDENTIFIER(d+1)
+//   rhs = opt_ASSIGNMENT(d+1, lhs)
+//   { return rhs; }
+//}
 
 // opt_ASSIGNMENT ::= 	BINASSIGN . EXPR
 //				|        epsilon
@@ -308,8 +305,8 @@ Tree DECL(int d):
 {
   Tracing.call(d,"DECLARATION");
   Token token;
-  Tree t, r;
-  String s,s2;
+  Tree r;
+  String s,s2, rhs;
   ArrayList<Tree > trees = new ArrayList<Tree>();
 }
 {
@@ -317,11 +314,11 @@ Tree DECL(int d):
   s2 = opt_PRE_TYPE(d+1, s)
   token = <BASIC_TYPE>
   { s2 = s2 + token.toString(); }
-  t = IDENTIFIER(d+1)
+  rhs = IDENTIFIER(d+1)
   r = opt_DECL(d+1, t)
   { trees.add(r);  }
   ( < COMMA >
-    t = IDENTIFIER(d+1) 
+    rhs = IDENTIFIER(d+1) 
     r = opt_DECL(d+1, t)
     { trees.add(r); }  )*
   { return new Decl(s2, trees); }
@@ -329,7 +326,7 @@ Tree DECL(int d):
 
 //opt_DECL ::= epsilon
 // 			 | BINASSIGN . EXPR
-Tree opt_DECL(int d, Tree rhs) :
+Tree opt_DECL(int d, String rhs) :
 {
   Token token;
   Tree lhs;
@@ -337,7 +334,7 @@ Tree opt_DECL(int d, Tree rhs) :
 {
   token = <BINASSIGN>
   lhs = EXPR(d+1)
-  { Assign(lhs, token.toString(), rhs); }
+  { Assign(new Ident(rhs), token.toString(), lhs); }
 |  //epsilon
   { return rhs; }
 }
@@ -400,23 +397,24 @@ Tree WHILEDO(int d):
 //		| FUNCTION . opt_PRE_POST_OP
 Tree E1(int d) : //TODO return type new E1();
 {
-	Tracing.call(d, "E1");
-  Tree t;
+  Tracing.call(d, "E1");
+  Tree t, opt;
+  String s;
   Token token;
 }
 {
   t = VALUE(d+1)
-  t = opt_PRE_POST_OP(d+1, t)
-  {return t; }
-| t = IDENTIFIER(d+1)
-  t = opt_PRE_POST_OP(d+1, t)
-    { return t; }
+  opt = opt_PRE_POST_OP(d+1)
+  {return new Value(t,opt); }
+| s = IDENTIFIER(d+1)
+  opt = opt_PRE_POST_OP(d+1)
+    { return opt; } //TODO trouver quoi return
 | (<PTR>)+
-	t = IDENTIFIER(d+1)
-	t = opt_PRE_POST_OP(d+1, t)
-	{ return t; }
+  s = IDENTIFIER(d+1)
+  opt = opt_PRE_POST_OP(d+1)
+	{ return opt; } //TODO trouver quoi return
 | t = FUNCTION(d+1)
-	t = opt_PRE_POST_OP(d+1, t)
+  opt = opt_PRE_POST_OP(d+1)
 	{ return t; }
 }
 
@@ -432,7 +430,7 @@ Tree FUNCTION(int d) :
     < RPAR >
   | < RPAR >
   )
-  { return new Function(id,args); }
+  { return new Function(new Ident(id),args); }
 }
 
 // ARGS ::= EXPR . opt_ARGS
@@ -463,19 +461,20 @@ Tree opt_ARGS(int d, Tree expr) :
 // opt_PRE_POST_OP ::= PRE_POST_OP
 //					 | ("[" . EXPR . "]")+
 //					 | epsilon
-Tree opt_PRE_POST_OP(int d, Tree right) :
+Tree opt_PRE_POST_OP(int d) : //TODO ambigü et comprendre pk...
 {
+  Tree t;
 }
 {
   < PRE_POST_OP >
-  { return right; }
+  { return null; }
 |
- (< LBRACKET > //TODO ambigü et comprendre pk...
+ (< LBRACKET > 
   t = EXPR(d+1) 
   < RBRACKET >)+
   { return t; }
 | //epsilon
-  { return right; }
+  { return null; }
 }
 
 
@@ -487,7 +486,7 @@ Tree opt_PRE_POST_OP(int d, Tree right) :
 //    | <DOUBLE> TODO
 //    | <CHAR>
 
-Tree VALUE(int d) :
+String VALUE(int d) :
 {
   Tracing.call(d, "VALUE");
   Token token;
@@ -495,17 +494,17 @@ Tree VALUE(int d) :
 }
 {
   token = < INTEGER >
- { return new Value(token.toString()); }
+ { return token.toString(); }
 | token = < BOOLEAN >
- { return new Value(token.toString()); }
+ { return token.toString(); }
 | token = < STRING >
- { return new Value(token.toString()); }
+ { return token.toString(); }
 | token = < FLOAT >
- { return new Value(token.toString()); }
+ { return token.toString(); }
 //| token = < DOUBLE >
-// { return new Value(token.toString()); }
+// { return token.toString(); }
 | token = < CHAR >
- { return new Value(token.toString()); }
+ { return token.toString(); }
 }
 
 //SIGN ::= "unsigned" | "signed" | epsilon
@@ -534,13 +533,13 @@ String opt_PRE_TYPE(int d, String s) :
 
 // == GIVEN ==
 // Tree IDENTIFIER ::= <IDENTIFIER>
-Tree IDENTIFIER(int d) :
+String IDENTIFIER(int d) :
 {
   Tracing.call(d,"IDENTIFIER");
   Token token;
 }
 { token = <IDENTIFIER>
-    { return new Ident(token.toString()); }
+    { return token.toString(); }
 }
 
 
