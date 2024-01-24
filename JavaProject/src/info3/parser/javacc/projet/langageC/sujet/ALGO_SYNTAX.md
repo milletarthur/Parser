@@ -21,7 +21,7 @@ RETURN ::= "return" . EXPR
 
 EXPR ::=
     | "(" . EXPR . ")" . opt_BINOP_EXPR
-    | opt_PRE_POST_OP . E1 . opt_PRE_POST_OP . opt_BINOP_EXPR
+    | opt_PRE_POST_OP . E1 . opt_BINOP_EXPR
 
 opt_BINOP_EXPR ::=
     | epsilon
@@ -43,11 +43,12 @@ opt_ELSE ::=
 
 WHILEDO ::= "while"  . "(" . EXPR . ")" . BLOCK
 
-E1 ::=
+E1 ::= (
     | VALUE
     | IDENT
     | (PTR)+ . IDENT
     | FUNCTION
+    ) . opt_PRE_POST_OP
 
 FUNCTION ::= IDENT . "(" . (epsilon | ARGS) . ")"
 

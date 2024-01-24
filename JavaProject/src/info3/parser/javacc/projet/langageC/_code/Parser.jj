@@ -341,8 +341,6 @@ Tree EXPR(int d) :
 // Tree opt_BINOP_EXPR ::=
 //    | BINOP . EXPR
 //    | epsilon
-//    | [ EXPR ]
-
 Tree opt_BINOP_EXPR(int d, Tree left) :
 {
   Tracing.call(d, "opt_BINOP_EXPR");
@@ -353,7 +351,6 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
   binop = BINOP(d+1)
   right = EXPR(d+1)
     {
- // TODO à modifier
  {return new Binop(left, binop, right);}
 }
 |
@@ -369,20 +366,21 @@ Tree E1(int d) :
 {
   Tree
 
-// opt_E1 ::=
+// opt_PRE_POST_OP ::=
 //   | PRE_POST_OP
 //   | ("[" . EXPR . "]")*
-Tree opt_E1(int d) :
+Tree opt_PRE_POST_OP(int d) :
 {
-  Tree t;
+  Token token;
+  Tree tree;
 }
 {
-  < PRE_POST_OP >
-  { return null; }
+  token = < PRE_POST_OP >
+  { return new Operator(token.toString()); } // TODO Operator à faire ?
 | < LBRACKET >
   t = EXPR(d+1)
   < RBRACKET >
-  { return t; }
+  { return new Statement(t); }
 }
 
 // String BINOP ::=
