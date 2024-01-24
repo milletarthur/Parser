@@ -73,7 +73,7 @@ TOKEN:
 
 TOKEN:
 { < STRING : < DQUOTE > (~["\\"])* < DQUOTE > > {  Tracing.token("STRING", image.toString()); }
-| < CHAR: < QUOTE > (~["\\"])* < QUOTE > > { Tracine.token("CHAR", image.toString()); }
+| < CHAR: < QUOTE > (~["\\"])* < QUOTE > > { Tracing.token("CHAR", image.toString()); }
 }
 
 TOKEN:
@@ -205,7 +205,7 @@ Tree STATEMENT(int d) :
   t = DECL(d+1)
   <SEMICOL>
    { return new Decl(t); }
-| t = EXPR(d+1)
+| t = EXPR(d+1) //TODO ambigüe
   <SEMICOL>
   { return new Expr(t); }
 | t = ASSIGNMENT(d+1)
@@ -329,7 +329,7 @@ Tree DECL(int d):
 
 //opt_DECL ::= epsilon
 // 			 | BINASSIGN . EXPR
-Tree opt_DECL(int d, tree rhs) :
+Tree opt_DECL(int d, Tree rhs) :
 {
   Token token;
   Tree lhs;
@@ -469,8 +469,9 @@ Tree opt_PRE_POST_OP(int d, Tree right) :
 {
   < PRE_POST_OP >
   { return right; }
-| (< LBRACKET >
-  t = EXPR(d+1)
+|
+ (< LBRACKET > //TODO ambigü et comprendre pk...
+  t = EXPR(d+1) 
   < RBRACKET >)+
   { return t; }
 | //epsilon
@@ -520,7 +521,7 @@ String opt_SIGN(int d) :
 }
 
 //PRE_TYPE ::= "long" | "short" | epsilon
-String opt_PRE_TYPE(int d, string s) :
+String opt_PRE_TYPE(int d, String s) :
 {
   Token token;
 }
