@@ -371,8 +371,9 @@ Tree opt_ELSE(int d) :
 }
 {
 	<ELSE>
-  	te = BLOCK(d+1)
-	{ return new Block(te); }
+	( te = BLOCK(d+1)    |
+    te = EXPR(d+1) )  
+	{ return te; }
 | /*epsilon*/
 	{ return null; }
 }
@@ -389,17 +390,13 @@ Tree WHILEDO(int d):
   	t = EXPR(d+1)
   	<RPAR>
   	te = BLOCK(d+1)
-  	
-	{
-	//while(t) {  te ;}
-	return te;
-	  }
+	{ return new While(t,te); }
 }
 
-// E1 ::=  VALUE . opt_POST_OP
-//		| <IDENTIFIER> . opt_POST_OP
-//		| (PTR)+ . <IDENTIFIER> . opt_POST_OP
-//		| FUNCTION . opt_POST_OP
+// E1 ::=  VALUE . opt_PRE_POST_OP
+//		| <IDENTIFIER> . opt_PRE_POST_OP
+//		| (PTR)+ . <IDENTIFIER> . opt_PRE_POST_OP
+//		| FUNCTION . opt_PRE_POST_OP
 Tree E1(int d) : //TODO return type new E1();
 {
 	Tracing.call(d, "E1");
@@ -408,19 +405,18 @@ Tree E1(int d) : //TODO return type new E1();
 }
 {
   t = VALUE(d+1)
-  t = opt_POST_OP(d+1, t)
+  t = opt_PRE_POST_OP(d+1, t)
   {return t; }
 | t = IDENTIFIER(d+1)
-  t = opt_POST_OP(d+1, t)
-  //<TODO_INFO3>
+  t = opt_PRE_POST_OP(d+1, t)
     { return t; }
-| < PTR >
-	t = EXPR(d+1)
-	{ return new Pointer(t); }
-| token = < PRE_POST_OP >
-	t = EXPR(d+1)
-{ return PreUnop(token.toString(), t); }
-
+| (<PTR>)+
+	t = IDENTIFIER(d+1)
+	t = opt_PRE_POST_OP(d+1, t)
+	{ return t; }
+| t = FUNCTION(d+1)
+	t = opt_PRE_POST_OP(d+1, t)
+	{ return t; }
 }
 
 // FUNCTION ::= <IDENTIFIER> . "(" . (epsilon | ARGS) . ")"
@@ -456,17 +452,20 @@ Tree opt_ARGS(int d) :
 }
 
 // opt_PRE_POST_OP ::= PRE_POST_OP
-//					 | ("[" . EXPR . "]")*
+//					 | ("[" . EXPR . "]")+
+//					 | epsilon
 Tree opt_PRE_POST_OP(int d, Tree right) :
 {
 }
 {
   < PRE_POST_OP >
-  { return null; }
+  { return right; }
 | (< LBRACKET >
   t = EXPR(d+1)
-  < RBRACKET >)*
+  < RBRACKET >)+
   { return t; }
+| //epsilon
+  { return right; }
 }
 
 
