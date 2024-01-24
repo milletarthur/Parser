@@ -11,8 +11,7 @@ SEQUENCE ::= ( STATEMENT )*
 
 STATEMENT ::=
     | DECL ";"
-    | EXPR ";"
-    | ASSIGNMENT ";"
+    | EXPR . opt_ASSIGNMENT ";"
     | IFTE
     | RETURN ";"
     | WHILEDO
@@ -27,7 +26,9 @@ opt_BINOP_EXPR ::=
     | epsilon
     | BINOP . EXPR
 
-ASSIGNEMENT ::= IDENT . BINASSIGN . EXPR
+opt_ASSIGNMENT ::=
+    | BINASSIGN . EXPR
+    | epsilon
 
 DECL ::= SIGN . PRE_TYPE . TYPE . IDENT . opt_DECL . ("," . IDENT . opt_DECL)*
 

@@ -422,8 +422,16 @@ Tree E1(int d) : //TODO return type new E1();
 // FUNCTION ::= IDENTIFIER . "(" . (epsilon | ARGS) . ")"
 Tree FUNCTION(int d) : //TODO impossible en javacc
 {
+  Tree id, args = null;
 }
 {
+  id = IDENTIFIER(d+1)
+  < LPAR >
+  (    args= ARGS(d+1)
+    < RPAR >
+  | < RPAR >
+  )
+  { return new Function(id,args); }
 }
 
 // ARGS ::= EXPR . opt_ARGS
