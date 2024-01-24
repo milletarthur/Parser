@@ -250,7 +250,7 @@ Tree EXPR(int d) :
 | t = opt_PRE_POST_OP(d+1, null)
   r = E1(d+1, t)
   s = opt_BINOP_EXPR(d+1, r)
-  { return new Expr(u); }
+  { return new Expr(s); }
 }
 
 // Tree opt_BINOP_EXPR ::=
@@ -310,29 +310,38 @@ Tree DECL(int d):
   Token token;
   Tree t, r;
   String s,s2;
+  ArrayList<Tree > trees = new ArrayList<Tree>();
 }
 {
   s = opt_SIGN(d+1)
   s2 = opt_PRE_TYPE(d+1, s)
   token = <BASIC_TYPE>
+  { s2 = s2 + token.toString(); }
   t = IDENTIFIER(d+1)
   r = opt_DECL(d+1, t)
-  ( //TODO gérer le truc de l'étoile (voir SEQUENCE pour savoir comment faire)
-    < COMMA >
-    IDENTIFIER(d+1) //TODO Tree var = IDE
-    opt_DECL(d+1,__) //TODO Tree varbis = opt_DECL(d+1,var)  )*
-  { return new Decl(token.toString(), t); }
+  { trees.add(r);  }
+  ( < COMMA >
+    t = IDENTIFIER(d+1) 
+    r = opt_DECL(d+1, t)
+    { trees.add(r); }  )*
+  { return new Decl(s2, trees); }
 }
 
 //opt_DECL ::= epsilon
 // 			 | BINASSIGN . EXPR
 Tree opt_DECL(int d, tree rhs) :
 {
+  Token token;
+  Tree lhs;
 }
 {
-  //TODO
-  { return null; }
+  token = <BINASSIGN>
+  lhs = EXPR(d+1)
+  { Assign(lhs, token.toString(), rhs); }
+|  //epsilon
+  { return rhs; }
 }
+
 
 // IFTE ::= "if" . "(" . EXPR . ")" . (BLOCK | EXPR . ";") . opt_ELSE
 Tree IFTE(int d) :
@@ -345,11 +354,12 @@ Tree IFTE(int d) :
   <LPAR>
   tc = EXPR(d+1)
   <RPAR>
-  tt = BLOCK(d+1)
+  ( tt = BLOCK(d+1)
+  |
+  tt = EXPR(d+1)
+  <SEMICOL> )  
   te = opt_ELSE(d+1)
-{
-  return new Ifte(tc, tt, te);
-}
+  { return new Ifte(tc, tt, te); }
 }
 
 // opt_ELSE ::= epsilon
@@ -506,7 +516,7 @@ String opt_PRE_TYPE(int d, string s) :
   token = <PRE_TYPE>
   { return s + token.toString(); }
 | //epsilon
-  { return null; }
+  { return s; }
 }
 
 // == GIVEN ==
