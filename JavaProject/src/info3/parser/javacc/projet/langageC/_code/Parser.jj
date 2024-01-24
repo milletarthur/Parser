@@ -483,7 +483,7 @@ Tree opt_PRE_POST_OP(int d, Tree right) :
 //    | <BOOLEAN>
 //    | <STRING>
 //    | <FLOAT>
-//    | <DOUBLE>
+//    | <DOUBLE> TODO
 //    | <CHAR>
 
 Tree VALUE(int d) :
@@ -493,21 +493,18 @@ Tree VALUE(int d) :
   Tree t;
 }
 {
-  token = < FLOAT >
-  { t = new Value(token.toString());
-    return t; }
-| token = < INTEGER >
- {t = new Value(token.toString());
- return t;}
+  token = < INTEGER >
+ { return new Value(token.toString()); }
 | token = < BOOLEAN >
- {t = new Value(token.toString());
- return t;}
+ { return new Value(token.toString()); }
 | token = < STRING >
- { t = new Value(token.toString());
- return t;}
+ { return new Value(token.toString()); }
+| token = < FLOAT >
+ { return new Value(token.toString()); }
+//| token = < DOUBLE >
+// { return new Value(token.toString()); }
 | token = < CHAR >
- { t = new Value(token.toString());
- return t; }
+ { return new Value(token.toString()); }
 }
 
 //SIGN ::= "unsigned" | "signed" | epsilon
