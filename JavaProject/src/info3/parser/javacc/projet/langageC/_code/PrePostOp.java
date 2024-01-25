@@ -24,11 +24,11 @@ public class PrePostOp extends Tree implements ITree {
 			string += prepostop;
 		}else if(t1 != null && t2 == null){
 			string += Pretty.string(format, "[");
-			string += t1.pretty(d);
+			string += t1.pretty(d+1);
 			string += Pretty.string(format, "]");
 		}else if(t1 != null && t2 != null) {
-			string += t1.pretty(d);
-			string += t2.pretty(d);
+			string += t1.pretty(d+1);
+			string += t2.pretty(d+1);
 		}
 		return string;
 	}

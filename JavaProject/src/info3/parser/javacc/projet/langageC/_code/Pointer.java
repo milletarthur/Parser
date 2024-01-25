@@ -18,10 +18,10 @@ public class Pointer extends Tree implements ITree  {
 			str+=s;
 		}
 		if(t1==null) {
-			str+=t1.pretty(d);
+			str+=t1.pretty(d+1);
 		}
 		if(t2 == null) {
-			str+=t2.pretty(d);
+			str+=t2.pretty(d+1);
 		}
 		return str;
 	}

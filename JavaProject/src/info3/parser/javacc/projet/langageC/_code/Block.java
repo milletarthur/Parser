@@ -26,7 +26,7 @@ public class Block extends Tree implements ITree {
 			return string;
 		} else {
 			string += Pretty.string(format, "{");
-			string += sequence.pretty(d);
+			string += sequence.pretty(d+1);
 			string += Pretty.string(format, "}");
 		}
 		return string;
