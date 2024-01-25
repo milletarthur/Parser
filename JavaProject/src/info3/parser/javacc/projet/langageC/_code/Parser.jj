@@ -245,8 +245,9 @@ Tree EXPR(int d) :
   t2 = < RPAR >
   r = opt_BINOP_EXPR(d+1, t)
   { return new Expr(nu,r); }
-| t = opt_PRE_POST_OP(d+1)
-  r = E1(d+1)
+|
+  t = opt_PRE_POST_OP(d+1)
+  r = E1(d+1,t)
   s = opt_BINOP_EXPR(d+1, r)
   { return new Expr(t,s); }
 }
@@ -336,7 +337,7 @@ Tree opt_DECL(int d, Tree rhs) :
 {
   token = <BINASSIGN>
   lhs = EXPR(d+1)
-  { Assign(rhs, token.toString(), lhs); }
+  { return new Assign(rhs, token.toString(), lhs); }
 |  //epsilon
   { return rhs; }
 }
@@ -394,31 +395,35 @@ Tree WHILEDO(int d):
 }
 
 // E1 ::=  VALUE . opt_PRE_POST_OP
-//		| opt_Ident 
+//		| VAR_FUNC . opt_PRE_POST_OP
 //		| (PTR)+ . IDENTIFIER . opt_PRE_POST_OP
-Tree E1(int d) :
+Tree E1(int d, Tree pre) :
 {
   Tracing.call(d, "E1");
-  Tree t, opt, func;
-  String s, ptrs = null;
+  Tree t, post;
+  String ptrs = null;
   Token token;
 }
 {
-  t = VALUE(d+1)
-  opt = opt_PRE_POST_OP(d+1)
-  {return new Value(t,opt); }
-| func = opt_Ident(d+1) 
-  { return func; }
-| (token = <PTR>
-{ ptrs = ptrs + token.toString(); } )+
+  (
+   t = VALUE(d+1)
+|
+   t = VAR_FUNC(d+1)
+|
+  (
+    token = <PTR>
+	{ ptrs = ptrs + token.toString(); }
+  )+
   t = IDENTIFIER(d+1)
+  )
   opt = opt_PRE_POST_OP(d+1)
-  { return new Pointer(ptrs,t,opt); } 
+  {return new E1(pre,ptrs,t,opt); }
 }
 
 // VAR_FUNC ::= IDENTIFIER. ("(" . ARGS . ")" | epsilon) . opt_PRE_POST_OP
 Tree VAR_FUNC(int d) :
 {
+  Tracing.call(d, "VAR_FUNC");
   Tree t, args;
 }
 {
@@ -442,29 +447,14 @@ Tree ARGS(int d) :
 }
 {
   ex = EXPR(d+1)
-  { this.args.add(expr); }
-  (    < COMA >
-    arg = EXPR(d+1);
+  { args.add(ex); }
+  (    < COMMA >
+    arg = EXPR(d+1)
     { args.add(arg); }
   )*
   { return new Args(args); }
 | /*epsilon*/
   { return null; }
-}
-
-// opt_ARGS ::= epsilon
-//			  | "," . ARGS
-Tree opt_ARGS(int d, Tree expr) :
-{
-  Tracing.call(d,"opt_ARGS");
-  Tree arg;
-}
-{ 
-  <COMMA>
-  arg = ARGS(d+1)
-  { return new Args(expr,arg); } 
-| //espilon
-  { return expr; }
 }
 
 // opt_PRE_POST_OP ::= PRE_POST_OP
@@ -552,7 +542,7 @@ Tree IDENTIFIER(int d) :
   Token token;
 }
 { token = <IDENTIFIER>
-    { return Ident(token.toString()); }
+    { return new Ident(token.toString()); }
 }
 
 

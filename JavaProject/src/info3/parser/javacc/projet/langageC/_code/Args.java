@@ -16,10 +16,10 @@ public class Args extends Tree implements ITree {
 		String s = new String();
 		Iterator<Tree> iter = args.iterator();
 		if (iter.hasNext()) {
-			s += iter.next().toString();
+			s += iter.next().pretty(d+1);
 			while (iter.hasNext()) {
 				s += Pretty.separator(format, ",");
-				s += iter.next().toString();
+				s += iter.next().pretty(d+1);
 			}
 		}
 		return s;
