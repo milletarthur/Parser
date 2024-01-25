@@ -18,9 +18,19 @@ public class Call extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
-		// TODO à modifier
 		{
-			return null;
+			String s = new String();
+			s += fun.pretty(d + 1);
+			s += "(";
+			int argnum = 0;
+			for (Tree arg : args) {
+				if (argnum != 0)
+					s += ", ";
+				s += arg;
+				argnum++;
+			}
+			s += ")";
+			return s;
 		}
 	}
 
