@@ -494,11 +494,13 @@ Tree VALUE(int d) :
   Tree t;
 }
 {
+  (
   token = < INTEGER >
 | token = < BOOLEAN >
 | token = < STRING >
 | token = < FLOAT >
 | token = < CHAR >
+)
  { return new Value(token); }
 }
 
