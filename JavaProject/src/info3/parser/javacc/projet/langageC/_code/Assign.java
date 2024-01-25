@@ -23,7 +23,6 @@ public class Assign extends Tree implements ITree {
 		string += location.pretty(d+1);
 		string += Pretty.assignment(format, " = ");
 		string += expression.pretty(d+1);
-		string += Pretty.separator(format, ";");
 		return string;
 	}
 

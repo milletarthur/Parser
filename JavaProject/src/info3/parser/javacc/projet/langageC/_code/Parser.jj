@@ -240,19 +240,18 @@ Tree EXPR(int d) :
 {
   Tracing.call(d, "EXPR");
   Tree t,r,s, nu = null;
-  Token t1, t2;
 }
 {
-  t1 = < LPAR >
+  < LPAR >
   t = EXPR(d+1)
-  t2 = < RPAR >
+  < RPAR >
   r = opt_BINOP_EXPR(d+1, t)
   { return new Expr(nu,r); }
 |
-  t = opt_PRE_POST_OP(d+1)
-  r = E1(d+1,t)
-  s = opt_BINOP_EXPR(d+1, r)
-  { return new Expr(t,s); }
+  s = opt_PRE_POST_OP(d+1)
+  t = E1(d+1,s)
+  r = opt_BINOP_EXPR(d+1, t)
+  { return new Expr(t,r); }
 }
 
 // Tree opt_BINOP_EXPR ::=
@@ -265,10 +264,9 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
   Tree right;
 }
 {
-  //binop = BINOP(d+1)
   binop = <BINOP>
   right = EXPR(d+1)
-  { //return new Binop(left, binop, right); }
+  {
   return new Binop(left, binop.toString(), right); }
 | /*epsilon*/
     { return left; }
@@ -454,17 +452,17 @@ Tree opt_PRE_POST_OP(int d) :
   Tracing.call(d,"opt_PRE_POST_OP");
   Tree t;
   Token token;
+  ArrayList<Tree > tabs = new ArrayList<Tree >();
 }
 {
   token = < PRE_POST_OP >
-  { return new PrePostOp(token.toString()); }
+  { return new Incr(token); }
 |
- (< LBRACKET > 
-  t = EXPR(d+1) 
-  < RBRACKET >)+
-  { return new PrePostOp(t); }
-| //epsilon
-  { return null; }
+ (< LBRACKET >
+  t = EXPR(d+1)
+  { tabs.add(t); }
+  < RBRACKET >)*
+  { return new Tabs(tabs); }
 }
 
 
