@@ -416,46 +416,40 @@ Tree E1(int d) :
   { return new Pointer(ptrs,t,opt); } 
 }
 
-// opt_Ident ::= IDENTIFIER. (FUNCTION | epsilon) . opt_PRE_POST_OP
-Tree opt_Ident(int d) :
+// VAR_FUNC ::= IDENTIFIER. ("(" . ARGS . ")" | epsilon) . opt_PRE_POST_OP
+Tree VAR_FUNC(int d) :
 {
-  Tree t, func = null, opt;
+  Tree t, args;
 }
 {
   t = IDENTIFIER(d+1)
-  (func = FUNCTION(d+1,t)
-  opt = opt_PRE_POST_OP(d+1)
-  { return new Function(t,func,opt) ; }
+  (    < LPAR >
+    args = ARGS(d+1)
+    < RPAR >
+    { return new Call(t,args); }
   |
-  opt = opt_PRE_POST_OP(d+1,t)
-  { return new PrePostOp(t,opt); }
+    /* epsilon */
+	{ return t; }
   )
-  
 }
 
-// FUNCTION ::= "(" . (ARGS | epsilon) . ")"
-Tree FUNCTION(int d, Tree id) :
-{
-  Tracing.call(d,"FUNCTION");
-  Tree args = null;
-}
-{
-  < LPAR >
-  (args= ARGS(d+1))?
-  < RPAR >
-  { return new Call(id,args); }
-}
-
-// ARGS ::= EXPR . opt_ARGS
+// ARGS ::= epsilon | EXPR . ("," . EXPR)*
 Tree ARGS(int d) :
 {
   Tracing.call(d,"ARGS");
-  Tree ex, args;
+  Tree ex, arg;
+  ArrayList<Tree > args = new ArrayList<Tree >();
 }
 {
   ex = EXPR(d+1)
-  args = opt_ARGS(d+1,ex)
-  { return args; }
+  { this.args.add(expr); }
+  (    < COMA >
+    arg = EXPR(d+1);
+    { args.add(arg); }
+  )*
+  { return new Args(args); }
+| /*epsilon*/
+  { return null; }
 }
 
 // opt_ARGS ::= epsilon

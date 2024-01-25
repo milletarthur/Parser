@@ -1,23 +1,27 @@
 package info3.parser.javacc.projet.langageC._code;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class Args extends Tree implements ITree {
 	
-	Tree fg,fd;
+	ArrayList<Tree> args;
 	
-	public Args (Tree t1, Tree t2) {
-		fg = t1;
-		fd = t2;
+	public Args(ArrayList<Tree> args) {
+		this.args = args;
 	}
 	
 	@Override
 	public String pretty(int d) {
-		Expr fg_expr = (Expr) fg;
-		String rv = new String();
-		rv = fg_expr.pretty();
-		if(fd != null) {
-			rv += ",";
-			rv += fd.pretty();
+		String s = new String();
+		Iterator<Tree> iter = args.iterator();
+		if (iter.hasNext()) {
+			s += iter.next().toString();
+			while (iter.hasNext()) {
+				s += Pretty.separator(format, ",");
+				s += iter.next().toString();
+			}
 		}
-		return rv;
+		return s;
 	}
 }
