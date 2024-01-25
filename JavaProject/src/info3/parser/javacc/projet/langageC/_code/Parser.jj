@@ -400,9 +400,7 @@ Tree WHILEDO(int d):
 Tree E1(int d, Tree pre) :
 {
   Tracing.call(d, "E1");
-<<<<<<< HEAD
   Tree t, post;
-  Pointer p;
   String ptrs = null;
   Token token;
 }
