@@ -237,13 +237,14 @@ Tree EXPR(int d) :
 {
   Tracing.call(d, "EXPR");
   Tree t,r,s;
+  Token t1, t2;
 }
 {
-  < LPAR >
+  t1 = < LPAR >
   t = EXPR(d+1)
-  < RPAR >
+  t2 = < RPAR >
   r = opt_BINOP_EXPR(d+1, t)
-  { return new Expr(r); }
+  { return new Expr(null,r); }
 | t = opt_PRE_POST_OP(d+1)
   r = E1(d+1)
   s = opt_BINOP_EXPR(d+1, r)
@@ -305,8 +306,8 @@ Tree DECL(int d):
 {
   Tracing.call(d,"DECLARATION");
   Token token;
-  Tree r;
-  String s,s2, rhs;
+  Tree r, rhs;
+  String s,s2;
   ArrayList<Tree > trees = new ArrayList<Tree>();
 }
 {
@@ -328,6 +329,7 @@ Tree DECL(int d):
 // 			 | BINASSIGN . EXPR
 Tree opt_DECL(int d, String rhs) :
 {
+  Tracing.call(d,"opt_DECL");
   Token token;
   Tree lhs;
 }
@@ -369,7 +371,8 @@ Tree opt_ELSE(int d) :
 {
 	<ELSE>
 	( te = BLOCK(d+1)    |
-    te = EXPR(d+1) )  
+    te = EXPR(d+1)
+    < SEMICOL > )  
 	{ return te; }
 | /*epsilon*/
 	{ return null; }
@@ -378,7 +381,7 @@ Tree opt_ELSE(int d) :
 // WHILEDO ::= "while" . "(" . EXPR . ")" . BLOCK
 Tree WHILEDO(int d):
 {
-	Tracing.call(d,"WHILE");
+	Tracing.call(d,"WHILEDO");
 	Tree t,te;
 }
 {
@@ -390,64 +393,73 @@ Tree WHILEDO(int d):
 	{ return new While(t,te); }
 }
 
-//TODO ambigüe
 // E1 ::=  VALUE . opt_PRE_POST_OP
-//		| IDENTIFIER . opt_PRE_POST_OP
+//		| opt_Ident 
 //		| (PTR)+ . IDENTIFIER . opt_PRE_POST_OP
-//		| FUNCTION . opt_PRE_POST_OP
 Tree E1(int d) : //TODO return type new E1();
 {
   Tracing.call(d, "E1");
-  Tree t, opt;
-  String s;
+  Tree t, opt, func;
+  String s, ptrs = null;
   Token token;
 }
 {
   t = VALUE(d+1)
   opt = opt_PRE_POST_OP(d+1)
   {return new Value(t,opt); }
-| s = IDENTIFIER(d+1)
-  opt = opt_PRE_POST_OP(d+1)
-    { return opt; } //TODO trouver quoi return
-| (<PTR>)+
-  s = IDENTIFIER(d+1)
+| func = opt_Ident(d+1)
+  { return func; }
+| (token = <PTR>
+{ ptrs = ptrs + token.toString(); } )+
+  t = IDENTIFIER(d+1)
   opt = opt_PRE_POST_OP(d+1)
 	{ return opt; } //TODO trouver quoi return
-| t = FUNCTION(d+1)
-  opt = opt_PRE_POST_OP(d+1)
-	{ return t; }
 }
 
-// FUNCTION ::= IDENTIFIER . "(" . (epsilon | ARGS) . ")"
-Tree FUNCTION(int d) :
+// opt_Ident ::= IDENTIFIER. (FUNCTION | epsilon) . opt_PRE_POST_OP
+Tree opt_Ident(int d) :
 {
-  Tree id, args = null;
+  Tree t, func;
 }
 {
-  id = IDENTIFIER(d+1)
+  t = IDENTIFIER(d+1)
+  ( func = FUNCTION(d+1,t)
+    { return func; }
+  )?
+  opt = opt_PRE_POST_OP(d+1)
+  { return opt; } //TODO trouver quoi return
+}
+
+// FUNCTION ::= "(" . (ARGS | epsilon) . ")"
+Tree FUNCTION(int d, Tree id) :
+{
+  Tracing.call(d,"FUNCTION");
+  Tree args = null;
+}
+{
   < LPAR >
-  (    args= ARGS(d+1)
-    < RPAR >
-  | < RPAR >
-  )
-  { return new Function(new Ident(id),args); }
+  (args= ARGS(d+1))?
+  < RPAR >
+  { return new Call(id,args); }
 }
 
 // ARGS ::= EXPR . opt_ARGS
 Tree ARGS(int d) :
 {
+  Tracing.call(d,"ARGS");
   Tree ex, args;
 }
 {
   ex = EXPR(d+1)
   args = opt_ARGS(d+1,ex)
-  { return null; }
+  { return args; }
 }
 
 // opt_ARGS ::= epsilon
 //			  | "," . ARGS
 Tree opt_ARGS(int d, Tree expr) :
 {
+  Tracing.call(d,"opt_ARGS");
   Tree arg;
 }
 { 
@@ -461,13 +473,15 @@ Tree opt_ARGS(int d, Tree expr) :
 // opt_PRE_POST_OP ::= PRE_POST_OP
 //					 | ("[" . EXPR . "]")+
 //					 | epsilon
-Tree opt_PRE_POST_OP(int d) : //TODO ambigü et comprendre pk...
+Tree opt_PRE_POST_OP(int d) :
 {
+  Tracing.call(d,"opt_PRE_POST_OP");
   Tree t;
+  Token token;
 }
 {
-  < PRE_POST_OP >
-  { return null; }
+  token = < PRE_POST_OP >
+  { return PrePostOp(token.toString()); }
 |
  (< LBRACKET > 
   t = EXPR(d+1) 
@@ -510,6 +524,7 @@ String VALUE(int d) :
 //SIGN ::= "unsigned" | "signed" | epsilon
 String opt_SIGN(int d) :
 {
+  Tracing.call(d,"opt_SIGN");
   Token token;
 }
 {
@@ -522,6 +537,7 @@ String opt_SIGN(int d) :
 //PRE_TYPE ::= "long" | "short" | epsilon
 String opt_PRE_TYPE(int d, String s) :
 {
+  Tracing.call(d,"opt_PRE_TYPE");
   Token token;
 }
 {
@@ -539,7 +555,7 @@ String IDENTIFIER(int d) :
   Token token;
 }
 { token = <IDENTIFIER>
-    { return token.toString(); }
+    { return Ident(token.toString()); }
 }
 
 
