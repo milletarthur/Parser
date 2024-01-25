@@ -20,7 +20,7 @@ public class Call extends Tree implements ITree {
 	public String pretty(int d) {
 		{
 			String s = new String();
-			s += fun.pretty(d);
+			s += fun.pretty(d + 1);
 			s += "(";
 			int argnum = 0;
 			for (Tree arg : args) {
