@@ -1,15 +1,28 @@
 package info3.parser.javacc.projet.langageC._code;
 
-public class Pointer extends Tree implements ITree {
+public class Pointer extends Tree implements ITree  {
 
-	Tree location;
-
-	// CONSTRUCTOR
-
-	public Pointer(Tree t) {
-		this.location = t;
+	String s;
+	Tree t1;
+	Tree t2;
+	
+	public Pointer(String st,Tree tu,Tree tde) {
+		this.s=st;
+		this.t1=tu;
+		this.t2=tde;
 	}
-
-	// PRETTY
-
+	
+	public String pretty(int d) {
+		String str = new String();
+		if(s == null) {
+			str+=s;
+		}
+		if(t1==null) {
+			str+=t1.pretty(d);
+		}
+		if(t2 == null) {
+			str+=t2.pretty(d);
+		}
+		return str;
+	}
 }
