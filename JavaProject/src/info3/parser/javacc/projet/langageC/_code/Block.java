@@ -14,8 +14,7 @@ public class Block extends Tree implements ITree {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO à modifier
-		return true;
+		return sequence.isEmpty();
 	}
 
 	// PRETTY
@@ -27,7 +26,7 @@ public class Block extends Tree implements ITree {
 			return string;
 		} else {
 			string += Pretty.string(format, "{");
-			string += sequence.pretty(d);
+			string += sequence.pretty(d+1);
 			string += Pretty.string(format, "}");
 		}
 		return string;

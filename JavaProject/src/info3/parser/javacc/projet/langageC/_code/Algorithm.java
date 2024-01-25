@@ -9,6 +9,8 @@ public class Algorithm extends Tree implements ITree {
 	Tree block;
 
 	public Algorithm(String name, Tree body) {
+		this.name = name;
+		this.block = body;
 	}
 
 	// PRETTY

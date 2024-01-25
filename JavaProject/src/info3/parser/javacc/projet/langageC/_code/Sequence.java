@@ -27,7 +27,7 @@ public class Sequence extends Tree implements ITree {
 	public String pretty(int d) {
 		String string = new String();
 		for (Tree statement : statements) {
-			string.concat(statement.pretty(d));
+			string.concat(statement.pretty(d+1));
 		}
 		return string;
 	}

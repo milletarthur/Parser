@@ -337,7 +337,7 @@ Tree opt_DECL(int d, Tree rhs) :
 {
   token = <BINASSIGN>
   lhs = EXPR(d+1)
-  { Assign(rhs, token.toString(), lhs); }
+  { return new Assign(rhs, token.toString(), lhs); }
 |  //epsilon
   { return rhs; }
 }
@@ -400,6 +400,7 @@ Tree WHILEDO(int d):
 Tree E1(int d, Tree pre) :
 {
   Tracing.call(d, "E1");
+<<<<<<< HEAD
   Tree t, post;
   Pointer p;
   String ptrs = null;
@@ -424,6 +425,7 @@ Tree E1(int d, Tree pre) :
 // VAR_FUNC ::= IDENTIFIER. ("(" . ARGS . ")" | epsilon) . opt_PRE_POST_OP
 Tree VAR_FUNC(int d) :
 {
+  Tracing.call(d, "VAR_FUNC");
   Tree t, args;
 }
 {
@@ -447,7 +449,7 @@ Tree ARGS(int d) :
 }
 {
   ex = EXPR(d+1)
-  { args.add(expr); }
+  { args.add(ex); }
   (    < COMMA >
     arg = EXPR(d+1)
     { args.add(arg); }
@@ -542,7 +544,7 @@ Tree IDENTIFIER(int d) :
   Token token;
 }
 { token = <IDENTIFIER>
-    { return Ident(token.toString()); }
+    { return new Ident(token.toString()); }
 }
 
 

@@ -10,6 +10,8 @@ public class Cell extends Tree implements ITree {
 	// CONSTRUCTOR
 
 	public Cell(Tree t, ArrayList<Tree> ts) {
+		this.array = t;
+		this.cells = ts;
 	}
 
 	// PRETTY

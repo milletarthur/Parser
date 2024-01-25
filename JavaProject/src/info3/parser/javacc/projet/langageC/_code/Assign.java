@@ -20,9 +20,9 @@ public class Assign extends Tree implements ITree {
 	public String pretty(int d) {
 		String string = new String();
 		string += Pretty.type(format, assign_type);
-		string += location.pretty(d);
+		string += location.pretty(d+1);
 		string += Pretty.assignment(format, " = ");
-		string += expression.pretty(d);
+		string += expression.pretty(d+1);
 		string += Pretty.separator(format, ";");
 		return string;
 	}

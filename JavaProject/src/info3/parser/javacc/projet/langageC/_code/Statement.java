@@ -15,7 +15,7 @@ public class Statement extends Tree implements ITree {
 	@Override
 	public String pretty(int d) {
 		String string = new String();
-		string += expr.pretty(d);
+		string += expr.pretty(d+1);
 		return string;
 		// TODO voir référence parseur
 	}

@@ -18,7 +18,13 @@ public class Binop extends Tree implements ITree {
 	public String pretty(int d) {
 		// TODO à modifier
 		{
-			return null;
+			String s = new String();
+			s += lhs.pretty(d+1);
+			s += " ";
+			s += op;
+			s += " ";
+			s += rhs.pretty(d+1);
+			return s;
 		}
 	}
 

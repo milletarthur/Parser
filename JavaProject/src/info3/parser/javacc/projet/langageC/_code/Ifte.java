@@ -21,12 +21,12 @@ public class Ifte extends Tree implements ITree {
 		String string = new String();
 		string += Pretty.identifier(format, "if");
 		string += Pretty.string(format, "(");
-		string += cond.pretty(d);
+		string += cond.pretty(d+1);
 		string += Pretty.string(format, ")");
-		string += then_block.pretty(d);
+		string += then_block.pretty(d+1);
 		if (!else_block.isEmpty()) {
 			string += Pretty.identifier(format,"else");
-			string += else_block.pretty(d);
+			string += else_block.pretty(d+1);
 		}
 		return string;
 	}
