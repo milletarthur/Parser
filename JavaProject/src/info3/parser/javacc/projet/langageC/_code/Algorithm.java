@@ -15,6 +15,7 @@ public class Algorithm extends Tree implements ITree {
 
 	// PRETTY
 
+	@Override
 	public String pretty(int d) { // GIVEN
 		String string = new String();
 		string += newline(d);

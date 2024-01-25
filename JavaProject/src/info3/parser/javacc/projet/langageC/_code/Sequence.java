@@ -25,10 +25,10 @@ public class Sequence extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
+		Iterator<Tree> iter = statements.iterator();
 		String string = new String();
-		for (Tree statement : statements) {
-			string.concat(statement.pretty(d+1));
-		}
+		while (iter.hasNext())
+			string += iter.next().pretty(d+1);
 		return string;
 	}
 

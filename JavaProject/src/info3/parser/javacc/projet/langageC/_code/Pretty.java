@@ -112,10 +112,6 @@ public class Pretty extends Format {
 	// NEWLINE with INDENTATION
 
 	public static final String newline(int depth, Format format, int line_number) {
-<<<<<<< HEAD
-		throw new RuntimeException("NIY");
-		// TODO
-=======
 		String string = new String();
 		string += "\n";
 		string += Pretty.line_number(format, Integer.toString(line_number));
@@ -123,7 +119,6 @@ public class Pretty extends Format {
 			string += "\t";
 		}
 		return string;
->>>>>>> refs/remotes/origin/ArthuretPierre
 	}
 
 }

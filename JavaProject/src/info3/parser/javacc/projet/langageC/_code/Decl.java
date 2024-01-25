@@ -1,6 +1,7 @@
 package info3.parser.javacc.projet.langageC._code;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Decl extends Tree implements ITree {
 
@@ -18,20 +19,16 @@ public class Decl extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
+		Iterator<Tree> iter = T.iterator();
 		String string = new String();
 		string+=st;
-		if(T.size() !=0) {
-			for(int i=0; i< T.size()-1;i++) {
-				string+= T.get(i).pretty(d+1);
-				string+= ",";
-			}
-			string+=T.get(T.size()).pretty(d+1);
-			return string;
-		}else { //EOFEcxeption 
-			System.out.println("/!\\ Decl : ArrayList n'a pas d'elem ce qui n'est pas normal ");
-			return string;
+		if(iter.hasNext())
+			string += iter.next().pretty(d+1);
+		while(iter.hasNext()) {
+			string += Pretty.separator(format, ",");
+			string += iter.next().pretty(d+1);
 		}
-		
+		return string;
 	}
 
 	// CFG

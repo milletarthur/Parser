@@ -31,7 +31,7 @@ public class Parser {
     //
     String path_file = args[0];
     Algorithm a = from_file(path_file);
-    // a.print();          
+    a.print();          
     // a.toDot("../dot/"); 
     //
     System.out.println("\n");
@@ -199,22 +199,25 @@ Tree STATEMENT(int d) :
 {
   Tracing.call(d, "STATEMENT");
   Tree t;
+  Token sc = null;
 }
 {
+  (
   t = DECL(d+1)
-  <SEMICOL>
-   { return t; }
-| t = EXPR(d+1) 
+  sc = <SEMICOL>
+|
+  t = EXPR(d+1) 
   t = opt_ASSIGNMENT(d+1, t)
-  <SEMICOL>
-  { return t; }
-| t = RETURN(d+1)
-  <SEMICOL>
-   { return t; }
-| t = IFTE(d+1)
-   { return t; }
-| t = WHILEDO(d+1)
-   { return t; }
+  sc = <SEMICOL>
+|
+  t = RETURN(d+1)
+  sc = <SEMICOL>
+|
+  t = IFTE(d+1)
+|
+  t = WHILEDO(d+1)
+)
+   { return new Statement(t, sc); }
 }
 
 // RETURN ::= "return" . EXPR
@@ -271,20 +274,6 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
     { return left; }
 }
 
-// ASSIGNMENT ::= IDENTIFIER . opt_ASSIGNMENT 
-//Tree ASSIGNMENT(int d) :
-//{
-//   Tracing.call(d,"ASSIGNMENT");
-//   Token token;
-//   Tree rhs;
-//   Tree lhs;
-//}
-//{
-//   lhs = IDENTIFIER(d+1)
-//   rhs = opt_ASSIGNMENT(d+1, lhs)
-//   { return rhs; }
-//}
-
 // opt_ASSIGNMENT ::= 	BINASSIGN . EXPR
 //				|        epsilon
 Tree opt_ASSIGNMENT(int d, Tree lhs) :
@@ -318,7 +307,7 @@ Tree DECL(int d):
   { s2 = s2 + token.toString(); }
   rhs = IDENTIFIER(d+1)
   r = opt_DECL(d+1, rhs)
-  { trees.add(r);  }
+  { trees.add(r); }
   ( < COMMA >
     rhs = IDENTIFIER(d+1) 
     r = opt_DECL(d+1, rhs)

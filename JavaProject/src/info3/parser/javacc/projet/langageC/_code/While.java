@@ -14,10 +14,12 @@ public class While extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
-		// TODO à modifier
-		{
-			return null;
-		}
+		String s = new String("while");
+		s += Pretty.string(format, "(");
+		s += cond.pretty(d+1);
+		s += Pretty.string(format, ")");
+		s += body.pretty(d+1);
+		return s;
 	}
 
 	// CFG
