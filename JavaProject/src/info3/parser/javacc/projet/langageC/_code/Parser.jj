@@ -31,7 +31,7 @@ public class Parser {
     //
     String path_file = args[0];
     Algorithm a = from_file(path_file);
-    // a.print();          
+    //a.print();          
     // a.toDot("../dot/"); 
     //
     System.out.println("\n");
@@ -494,6 +494,7 @@ Tree VALUE(int d) :
   Tree t;
 }
 {
+  (
   token = < INTEGER >
 | token = < BOOLEAN >
 | token = < STRING >
@@ -501,6 +502,7 @@ Tree VALUE(int d) :
 //| token = < DOUBLE >
 // { return token.toString(); }
 | token = < CHAR >
+)
  { return new Value(token); }
 }
 

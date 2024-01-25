@@ -4,14 +4,14 @@ public class Value extends Tree implements ITree {
 
 	String ident;
 
-	public Value(Token id) {
-		this.ident = id.toString();
+	public Value(Token ident) {
+		this.ident = ident.toString();
 	}
 
 	// PRETTY
 
 	@Override
 	public String pretty(int d) {
-		return ident;
+		return new String(ident);
 	}
 }
