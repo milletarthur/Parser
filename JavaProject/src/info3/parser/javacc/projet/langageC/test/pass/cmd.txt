@@ -1,0 +1,1 @@
+java -cp ../../../../../../../../bin   info3.parser.javacc.projet.langageC._code.Parser a00.c
