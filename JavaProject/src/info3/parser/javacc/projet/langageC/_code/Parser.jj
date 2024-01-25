@@ -396,7 +396,7 @@ Tree WHILEDO(int d):
 // E1 ::=  VALUE . opt_PRE_POST_OP
 //		| opt_Ident 
 //		| (PTR)+ . IDENTIFIER . opt_PRE_POST_OP
-Tree E1(int d) : //TODO return type new E1();
+Tree E1(int d) :
 {
   Tracing.call(d, "E1");
   Tree t, opt, func;
@@ -407,27 +407,30 @@ Tree E1(int d) : //TODO return type new E1();
   t = VALUE(d+1)
   opt = opt_PRE_POST_OP(d+1)
   {return new Value(t,opt); }
-| func = opt_Ident(d+1)
+| func = opt_Ident(d+1) 
   { return func; }
 | (token = <PTR>
 { ptrs = ptrs + token.toString(); } )+
   t = IDENTIFIER(d+1)
   opt = opt_PRE_POST_OP(d+1)
-	{ return opt; } //TODO trouver quoi return
+  { return new Pointer(ptrs,t,opt); } 
 }
 
 // opt_Ident ::= IDENTIFIER. (FUNCTION | epsilon) . opt_PRE_POST_OP
 Tree opt_Ident(int d) :
 {
-  Tree t, func;
+  Tree t, func = null, opt;
 }
 {
   t = IDENTIFIER(d+1)
-  ( func = FUNCTION(d+1,t)
-    { return func; }
-  )?
+  (func = FUNCTION(d+1,t)
   opt = opt_PRE_POST_OP(d+1)
-  { return opt; } //TODO trouver quoi return
+  { return new Function(t,func,opt) ; }
+  |
+  opt = opt_PRE_POST_OP(d+1,t)
+  { return new PrePosOP(t,opt); }
+  )
+  
 }
 
 // FUNCTION ::= "(" . (ARGS | epsilon) . ")"
@@ -465,7 +468,7 @@ Tree opt_ARGS(int d, Tree expr) :
 { 
   <COMMA>
   arg = ARGS(d+1)
-  { return new Args(expr,arg); } //TODO créer Args.java
+  { return new Args(expr,arg); } 
 | //espilon
   { return expr; }
 }
@@ -481,12 +484,12 @@ Tree opt_PRE_POST_OP(int d) :
 }
 {
   token = < PRE_POST_OP >
-  { return PrePostOp(token.toString()); }
+  { return new PrePostOp(token.toString()); }
 |
  (< LBRACKET > 
   t = EXPR(d+1) 
   < RBRACKET >)+
-  { return t; }
+  { return new PrePosOP(t); }
 | //epsilon
   { return null; }
 }
@@ -497,7 +500,7 @@ Tree opt_PRE_POST_OP(int d) :
 //    | <BOOLEAN>
 //    | <STRING>
 //    | <FLOAT>
-//    | <DOUBLE> TODO
+//    | <DOUBLE> TODO --inutile
 //    | <CHAR>
 
 String VALUE(int d) :
