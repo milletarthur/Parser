@@ -1,15 +1,17 @@
 package info3.parser.javacc.projet.langageC._code;
 
+import java.util.ArrayList;
+
 public class Decl extends Tree implements ITree {
 
-	String type;
-	Tree var;
+	ArrayList<Tree> T;
+	String st;
 
 	// CONSTRUCTOR
-
-	public Decl(String type, Tree var) {
-		this.type = type;
-		this.var = var;
+	
+	public Decl(String s ,ArrayList<Tree> trees) {
+		this.st=s;
+		this.T=trees;
 	}
 
 	// PRETTY
@@ -17,10 +19,19 @@ public class Decl extends Tree implements ITree {
 	@Override
 	public String pretty(int d) {
 		String string = new String();
-		string += Pretty.type(format, type);
-		string += var.pretty(d);
-		string += Pretty.separator(format, ";");
-		return string;
+		string+=st;
+		if(T.size() !=0) {
+			for(int i=0; i< T.size()-1;i++) {
+				string+= T.get(i).pretty(d);
+				string+= ",";
+			}
+			string+=T.get(T.size()).pretty(d);
+			return string;
+		}else { //EOFEcxeption 
+			System.out.println("/!\\ Decl : ArrayList n'a pas d'elem ce qui n'est pas normal ");
+			return string;
+		}
+		
 	}
 
 	// CFG
