@@ -10,6 +10,8 @@ public class Call extends Tree implements ITree {
 	// CONSTRUCTOR
 
 	public Call(Tree t, ArrayList<Tree> ts) {
+		this.fun = t;
+		this.args = ts;
 	}
 
 	// PRETTY

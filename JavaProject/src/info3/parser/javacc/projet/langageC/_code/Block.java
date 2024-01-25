@@ -14,8 +14,7 @@ public class Block extends Tree implements ITree {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO à modifier
-		return true;
+		return sequence.isEmpty();
 	}
 
 	// PRETTY
