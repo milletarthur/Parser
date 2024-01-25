@@ -16,7 +16,7 @@ public class Ident extends Tree implements ITree {
 	public String pretty(int d) {
 		// TODO à modifier
 		{
-			return null;
+			return name;
 		}
 	}
 }
