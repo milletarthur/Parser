@@ -2,6 +2,7 @@ package info3.parser.javacc.projet.langageC._code;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import info3.shared.Format;
 import info3.shared.Html;
 
@@ -111,6 +112,8 @@ public class Pretty extends Format {
 	// NEWLINE with INDENTATION
 
 	public static final String newline(int depth, Format format, int line_number) {
+		throw new RuntimeException("NIY");
+		// TODO
 	}
 
 }
