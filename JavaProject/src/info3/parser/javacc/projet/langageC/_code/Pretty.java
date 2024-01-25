@@ -111,6 +111,13 @@ public class Pretty extends Format {
 	// NEWLINE with INDENTATION
 
 	public static final String newline(int depth, Format format, int line_number) {
+		String string = new String();
+		string += "\n";
+		string += Pretty.line_number(format, Integer.toString(line_number));
+		for(int i = 0; i < depth; i++) {
+			string += "\t";
+		}
+		return string;
 	}
 
 }
