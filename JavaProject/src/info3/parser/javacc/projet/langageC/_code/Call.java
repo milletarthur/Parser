@@ -10,15 +10,27 @@ public class Call extends Tree implements ITree {
 	// CONSTRUCTOR
 
 	public Call(Tree t, ArrayList<Tree> ts) {
+		this.fun = t;
+		this.args = ts;
 	}
 
 	// PRETTY
 
 	@Override
 	public String pretty(int d) {
-		// TODO à modifier
 		{
-			return null;
+			String s = new String();
+			s += fun.pretty(d);
+			s += "(";
+			int argnum = 0;
+			for (Tree arg : args) {
+				if (argnum != 0)
+					s += ", ";
+				s += arg;
+				argnum++;
+			}
+			s += ")";
+			return s;
 		}
 	}
 

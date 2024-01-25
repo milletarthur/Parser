@@ -14,9 +14,8 @@ public class Ident extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
-		// TODO à modifier
 		{
-			return null;
+			return name;
 		}
 	}
 }
