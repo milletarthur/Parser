@@ -263,7 +263,9 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
 }
 {
   //binop = BINOP(d+1)
-  binop = <BINOP>
+  (    binop = <BINOP>
+  | binop = <PTR>
+  )
   right = EXPR(d+1)
   { //return new Binop(left, binop, right); }
   return new Binop(left, binop.toString(), right); }
@@ -306,7 +308,7 @@ Tree opt_ASSIGNMENT(int d, Tree lhs) :
 Tree DECL(int d):
 {
   Tracing.call(d,"DECLARATION");
-  Token token;
+  Token token,ptrs;
   Tree r, rhs;
   String s,s2;
   ArrayList<Tree > trees = new ArrayList<Tree>();
@@ -314,6 +316,8 @@ Tree DECL(int d):
 {
   s = opt_SIGN(d+1)
   s2 = opt_PRE_TYPE(d+1, s)
+//  (ptrs = < PTR >
+//  { s2 = s2 + ptrs.toString(); })*
   token = <BASIC_TYPE>
   { s2 = s2 + token.toString(); }
   rhs = IDENTIFIER(d+1)
@@ -533,7 +537,7 @@ String opt_PRE_TYPE(int d, String s) :
 }
 
 // == GIVEN ==
-// Tree IDENTIFIER ::= <IDENTIFIER>
+// Tree IDENTIFIER ::= <IDENTIFIER> | < PTR >
 Tree IDENTIFIER(int d) :
 {
   Tracing.call(d,"IDENTIFIER");
