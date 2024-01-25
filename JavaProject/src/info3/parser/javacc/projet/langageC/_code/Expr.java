@@ -14,8 +14,8 @@ public class Expr extends Tree implements ITree {
 	public String pretty(int d) {
 		String rv = new String();
 		if(lhs != null) 
-				rv += "[" + lhs.toString() + "]";
-		rv += rhs.toString();
+				rv += "[" + lhs.pretty(d+1) + "]";
+		rv += rhs.pretty(d+1);
 		return rv;
 	}
 }
