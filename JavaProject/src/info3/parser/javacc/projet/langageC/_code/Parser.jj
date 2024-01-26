@@ -311,7 +311,7 @@ Tree DECL(int d):
   Tracing.call(d,"DECLARATION");
   Token token,ptrs;
   Tree r, rhs;
-  String s,s2,s3;
+  String s = "",s2 = "",s3 = "";
   ArrayList<Tree > trees = new ArrayList<Tree>();
 }
 {
@@ -413,7 +413,7 @@ Tree E1(int d, Tree pre) :
 {
   Tracing.call(d, "E1");
   Tree t, post;
-  String ptrs = null;
+  String ptrs = "";
   Token token;
 }
 {
@@ -560,7 +560,7 @@ Tree IDENTIFIER(int d) :
 String opt_PTR(int d) :
 {
   Tracing.call(d,"opt_PTR");
-  String s = null;
+  String s = "";
   Token token;
 }
 { (token = <ETLOG>
