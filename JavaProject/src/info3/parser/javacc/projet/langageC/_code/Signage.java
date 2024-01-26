@@ -15,7 +15,7 @@ public class Signage extends Tree implements ITree {
 			this.pretype = b.toString();
 		else
 			this.pretype = null;
-		this.type = c.toString();
+		this.type = c.toString() + " ";
 		ptr = new String();
 		Iterator<Token> iter = d.iterator();
 		while (iter.hasNext()) {

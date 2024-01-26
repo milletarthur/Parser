@@ -23,10 +23,10 @@ public class Ifte extends Tree implements ITree {
 		string += Pretty.string(format, "(");
 		string += cond.pretty(d+1);
 		string += Pretty.string(format, ")");
-		string += then_block.pretty(d+1);
+		string += then_block.pretty(d);
 		if (!else_block.isEmpty()) {
-			string += Pretty.keyword(d+1,format,"else");
-			string += else_block.pretty(d+1);
+			string += Pretty.keyword(d,format,"else");
+			string += else_block.pretty(d);
 		}
 		return string;
 	}
