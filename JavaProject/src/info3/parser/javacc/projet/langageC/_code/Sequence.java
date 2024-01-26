@@ -28,6 +28,7 @@ public class Sequence extends Tree implements ITree {
 		String string = new String();
 		for (Tree statement : statements) {
 			string += statement.pretty(d+1);
+			string += newline(d);
 		}
 		return string;
 	}
