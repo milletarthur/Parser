@@ -58,7 +58,7 @@ TOKEN:
 TOKEN:
 { < PTR  : "*" | "&" >  { Tracing.token("PTR", image.toString()); }
 | < PRE_POST_OP : "++" | "--" | "!">  { Tracing.token("PRE_POST_OP", image.toString()); }
-| < BINOP  : "/" | "*" | "!=" | "==" | "|" | "&" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>" > { Tracing.token("BINOP", image.toString()); }
+| < BINOP  : "/" | "!=" | "==" | "|" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>" > { Tracing.token("BINOP", image.toString()); }
 | < BINASSIGN : "=" | ":=" | "+=" | "-=" | "*=" | "&="  | "|=" | "<<=" | ">>=" >  { Tracing.token("ASSIGN", image.toString()); }
 }
 
@@ -257,7 +257,10 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
   Tree right;
 }
 {
-  binop = <BINOP>
+  (
+    binop = <BINOP>
+  | binop = < PTR >
+  )
   right = EXPR(d+1)
   {
   return new Binop(left, binop, right); }
@@ -303,16 +306,21 @@ Tree DECL(int d):
   { return new Decl(s, trees); }
 }
 
-//SIGNAGE ::= (SIGN | epsilon) . (PRE_TYPE | epsilon) . BASIC_TYPE
+//SIGNAGE ::= (SIGN | epsilon) . (PRE_TYPE | epsilon) . (PTR)* . BASIC_TYPE
 Tree SIGNAGE(int d) :
 {
-  Token a=null,b=null,c;
+  Token a=null,b=null,c, e = null;
+  ArrayList<Token> ptr = new ArrayList<Token >();
 }
 {
   (a = < SIGN >)?
   (b = <PRE_TYPE>)?
   c = < BASIC_TYPE >
-  { return new Signage(a,b,c); }
+  (
+    e = < PTR >
+    { ptr.add(e); }
+  )*
+  { return new Signage(a,b,c,ptr); }
 }
 
 //opt_DECL ::= epsilon

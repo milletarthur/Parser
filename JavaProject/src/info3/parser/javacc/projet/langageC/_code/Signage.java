@@ -1,10 +1,12 @@
 package info3.parser.javacc.projet.langageC._code;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 public class Signage extends Tree implements ITree {
 	
-	String sign, pretype, type;
+	String sign, pretype, ptr, type;
 	
-	public Signage(Token a, Token b, Token c) {
+	public Signage(Token a, Token b, Token c, ArrayList<Token> d) {
 		if (a != null)
 			this.sign = a.toString();
 		else
@@ -14,6 +16,12 @@ public class Signage extends Tree implements ITree {
 		else
 			this.pretype = null;
 		this.type = c.toString();
+		ptr = new String();
+		Iterator<Token> iter = d.iterator();
+		while (iter.hasNext()) {
+			ptr += iter.next().toString();
+		}
+		
 	}
 	
 	@Override
@@ -24,6 +32,8 @@ public class Signage extends Tree implements ITree {
 		if (pretype != null)
 			s += Pretty.type(format, pretype);
 		s += Pretty.type(format, type);
+		if (ptr != null)
+			s+= Pretty.binop(format, ptr);
 		return s;
 	}
 }
