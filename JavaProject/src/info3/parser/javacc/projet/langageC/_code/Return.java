@@ -14,7 +14,7 @@ public class Return extends Tree implements ITree {
 	@Override
 	public String pretty(int d) {
 		String s = new String();
-		s += Pretty.keyword(d+1, format, "return");
+		s += Pretty.keyword(d+1, format, "return ");
 		s += expr.pretty(d+1);
 		return s;
 	}
