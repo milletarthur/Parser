@@ -238,7 +238,7 @@ Tree RETURN(int d) :
 Tree EXPR(int d) :
 {
   Tracing.call(d, "EXPR");
-  Tree t,r,s, nu = null;
+  Tree t,r,s;
 }
 {
   s = opt_PRE_POST_OP(d+1)
