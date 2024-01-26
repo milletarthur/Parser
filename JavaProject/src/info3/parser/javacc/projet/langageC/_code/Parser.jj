@@ -57,8 +57,9 @@ TOKEN:
 TOKEN:
 { < PTR  : "*" | "&" >  { Tracing.token("PTR", image.toString()); }
 | < PRE_POST_OP : "++" | "--" | "!">  { Tracing.token("PRE_POST_OP", image.toString()); }
-| < BINOP  : "/" | "*" | "!=" | "==" | "|" | "&" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>" > { Tracing.token("BINOP", image.toString()); }
+| < BINOP  : "/" | "*" | "!=" | "==" | "|" | "&" | "+" | "-" | "%" | "<" | ">" | "<=" | ">=" | "||" | "<<" | ">>" > { Tracing.token("BINOP", image.toString()); }
 | < BINASSIGN : "=" | ":=" | "+=" | "-=" | "*=" | "&="  | "|=" | "<<=" | ">>=" >  { Tracing.token("ASSIGN", image.toString()); }
+| < ETLOG : "&&" > { Tracing.token("ETLOG", image.toString()); }
 }
 
 TOKEN:
@@ -264,6 +265,7 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
   //binop = BINOP(d+1)
   (    binop = <BINOP>
   | binop = <PTR>
+  | binop = <ETLOG>
   )
   right = EXPR(d+1)
   { //return new Binop(left, binop, right); }
@@ -309,7 +311,7 @@ Tree DECL(int d):
   Tracing.call(d,"DECLARATION");
   Token token,ptrs;
   Tree r, rhs;
-  String s,s2;
+  String s,s2,s3;
   ArrayList<Tree > trees = new ArrayList<Tree>();
 }
 {
@@ -318,7 +320,14 @@ Tree DECL(int d):
 //  (ptrs = < PTR >
 //  { s2 = s2 + ptrs.toString(); })*
   token = <BASIC_TYPE>
-  { s2 = s2 + token.toString(); }
+  s3 = opt_PTR(d)
+  {
+	if(s3 != null) { 
+    	s3 = s3 + s2 + token.toString();
+    } else { 
+      s3 = s2 + token.toString();
+    }
+  }
   rhs = IDENTIFIER(d+1)
   r = opt_DECL(d+1, rhs)
   { trees.add(r);  }
@@ -326,7 +335,7 @@ Tree DECL(int d):
     rhs = IDENTIFIER(d+1) 
     r = opt_DECL(d+1, rhs)
     { trees.add(r); }  )*
-  { return new Decl(s2, trees); }
+  { return new Decl(s3, trees); }
 }
 
 //opt_DECL ::= epsilon
@@ -546,6 +555,20 @@ Tree IDENTIFIER(int d) :
     { return new Ident(token.toString()); }
 }
 
+
+// TODO !
+String opt_PTR(int d) :
+{
+  Tracing.call(d,"opt_PTR");
+  String s = null;
+  Token token;
+}
+{ (token = <ETLOG>
+  { s += token.toString(); }
+  |token = <PTR>
+  { s += token.toString(); } )*
+  { return s; }
+}
 
 //String BINOP(int d) :
 //{
