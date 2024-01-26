@@ -31,8 +31,8 @@ public class Parser {
     //
     String path_file = args[0];
     Algorithm a = from_file(path_file);
-    // a.print();          
-    // a.toDot("../dot/"); 
+    a.print();          
+    // a.toDot("../dot/");
     System.out.println("\n");
   }
 }
@@ -148,7 +148,7 @@ Algorithm parse():
   <EOF>
   	{
   	  a = new Algorithm(token.toString(), t);
-  	  // Tracing.parsed(0, "PARSER", "\n");
+  	  Tracing.parsed(0, "PARSER", "\n");
   	  return a;
   	 }
 }
