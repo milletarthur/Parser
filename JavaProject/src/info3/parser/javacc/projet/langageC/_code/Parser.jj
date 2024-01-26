@@ -33,7 +33,6 @@ public class Parser {
     Algorithm a = from_file(path_file);
     // a.print();          
     // a.toDot("../dot/"); 
-    // go push
     System.out.println("\n");
   }
 }
