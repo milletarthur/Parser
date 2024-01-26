@@ -24,6 +24,7 @@ public class Assign extends Tree implements ITree {
 		string += Pretty.assignment(format, " = ");
 		string += expression.pretty_with_line_number(d+1);
 		string += Pretty.separator(format, ";");
+		string += newline(d+1);
 		return string;
 	}
 

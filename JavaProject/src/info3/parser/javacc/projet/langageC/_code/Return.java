@@ -14,9 +14,10 @@ public class Return extends Tree implements ITree {
 	@Override
 	public String pretty(int d) {
 		String string = new String();
-		string += Pretty.identifier(format, "return");
+		string += Pretty.identifier(format, "return ");
 		string += expr.pretty(d+1);
 		string += Pretty.identifier(format, ";");
+		string += newline(d+1);
 		return string;
 	}
 
