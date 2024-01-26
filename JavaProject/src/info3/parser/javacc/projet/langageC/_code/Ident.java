@@ -14,6 +14,8 @@ public class Ident extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
-		return name;
+		String s = new String();
+		s += name;
+		return s;
 	}
 }
