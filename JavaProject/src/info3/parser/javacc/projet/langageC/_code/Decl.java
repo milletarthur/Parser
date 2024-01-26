@@ -21,12 +21,12 @@ public class Decl extends Tree implements ITree {
 	public String pretty(int d) {
 		Iterator<Tree> iter = T.iterator();
 		String string = new String();
-		string += s.pretty(d+1);
+		string += s.pretty(d);
 		if(iter.hasNext())
-			string += iter.next().pretty(d+1);
+			string += iter.next().pretty(d);
 		while(iter.hasNext()) {
 			string += Pretty.separator(format, ",");
-			string += iter.next().pretty(d+1);
+			string += iter.next().pretty(d);
 		}
 		return string;
 	}

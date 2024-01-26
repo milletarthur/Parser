@@ -10,6 +10,6 @@ public class Expr extends Tree implements ITree {
 	
 	@Override
 	public String pretty(int d) {
-		return t.pretty(d+1);
+		return t.pretty(d);
 	}
 }

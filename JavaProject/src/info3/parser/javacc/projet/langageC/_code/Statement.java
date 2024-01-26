@@ -20,7 +20,7 @@ public class Statement extends Tree implements ITree {
 	@Override
 	public String pretty(int d) {
 		String string = new String();
-		string += expr.pretty(d+1);
+		string += expr.pretty(d);
 		if (sc != null)
 			string += Pretty.separator(format, sc);
 		return string;

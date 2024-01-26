@@ -19,9 +19,9 @@ public class Assign extends Tree implements ITree {
 	@Override
 	public String pretty(int d) {
 		String string = new String();
-		string += location.pretty(d+1);
+		string += location.pretty(d);
 		string += Pretty.assignment(format, assign);
-		string += expression.pretty(d+1);
+		string += expression.pretty(d);
 		return string;
 	}
 

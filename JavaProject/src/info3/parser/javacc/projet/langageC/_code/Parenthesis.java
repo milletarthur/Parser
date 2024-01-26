@@ -11,7 +11,7 @@ public class Parenthesis extends Tree implements ITree {
 	public String pretty(int d) {
 		String s = new String();
 		s += Pretty.string(format, "(");
-		s += t.pretty(d+1);
+		s += t.pretty(d);
 		s += Pretty.string(format, ")");
 		return s;
 	}

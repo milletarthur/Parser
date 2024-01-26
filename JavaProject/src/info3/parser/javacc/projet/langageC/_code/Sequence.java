@@ -29,11 +29,11 @@ public class Sequence extends Tree implements ITree {
 		if (!isEmpty()) {
 			Iterator<Tree> iter = statements.iterator();
 			if (iter.hasNext()) {
-				string += iter.next().pretty(d+1);
+				string += iter.next().pretty(d);
 			}
 			while (iter.hasNext()) {
-				string += Pretty.newline(d+1, format, line_number);
-				string += iter.next().pretty(d + 1);
+				string += Pretty.newline(d, format, line_number);
+				string += iter.next().pretty(d);
 			}
 		}
 		return string;

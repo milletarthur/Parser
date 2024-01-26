@@ -18,14 +18,14 @@ public class E1 extends Tree implements ITree {
 	public String pretty(int d) {
 		String string = new String();
 		if (pre != null) {
-			string += pre.pretty(d+1);
+			string += pre.pretty(d);
 		}
 		if (ptr != null) {
 			string += ptr;
 		}
-		string += value.pretty(d+1);
+		string += value.pretty(d);
 		if (post != null) {
-			string += post.pretty(d+1);
+			string += post.pretty(d);
 		}
 		return string;
 	}

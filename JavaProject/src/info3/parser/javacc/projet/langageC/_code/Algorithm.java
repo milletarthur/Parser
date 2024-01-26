@@ -21,7 +21,7 @@ public class Algorithm extends Tree implements ITree {
 		string += newline(d);
 		string += Pretty.keyword(d + 1, format, "PROGRAM");
 		string += String.format("(%s)", Pretty.identifier(format, name));
-		string += block.pretty_with_line_number(d + 1);
+		string += block.pretty_with_line_number(d);
 		return string;
 	}
 
