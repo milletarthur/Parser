@@ -20,11 +20,11 @@ public class Decl extends Tree implements ITree {
 	public String pretty(int d) {
 		String string = new String();
 		string+=st;
-		string+=" ";
+		string+=Pretty.string(format, " ");
 		if(T.size() !=0) {
 			for(int i=0; i< T.size()-1;i++) {
 				string+= T.get(i).pretty(d+1);
-				string+= ",";
+				string+= Pretty.separator(format, ",");
 			}
 			string += T.get(T.size()-1).pretty(d+1);
 			string += Pretty.string(format, ";");

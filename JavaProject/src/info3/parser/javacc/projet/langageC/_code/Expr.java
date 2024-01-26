@@ -13,8 +13,11 @@ public class Expr extends Tree implements ITree {
 	@Override
 	public String pretty(int d) {
 		String rv = new String();
-		if(lhs != null) 
-				rv += "[" + lhs.pretty(d+1) + "]";
+		if(lhs != null) {
+				rv += Pretty.string(format, "[");
+				rv += lhs.pretty(d+1);
+				rv += Pretty.string(format, "]");
+		}
 		rv += rhs.pretty(d+1);
 		return rv;
 	}

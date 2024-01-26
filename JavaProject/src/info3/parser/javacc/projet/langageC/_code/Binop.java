@@ -20,9 +20,9 @@ public class Binop extends Tree implements ITree {
 		{
 			String s = new String();
 			s += lhs.pretty(d+1);
-			s += " ";
+			s += Pretty.string(format, " ");
 			s += op;
-			s += " ";
+			s += Pretty.string(format, " ");
 			s += rhs.pretty(d+1);
 			return s;
 		}

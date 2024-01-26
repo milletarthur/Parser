@@ -26,15 +26,15 @@ public class Call extends Tree implements ITree {
 		{
 			String s = new String();
 			s += fun.pretty(d + 1);
-			s += "(";
+			s += Pretty.string(format, "(");
 			int argnum = 0;
 			for (Tree arg : args) {
 				if (argnum != 0)
-					s += ", ";
+					s += Pretty.separator(format, ",");
 				s += arg;
 				argnum++;
 			}
-			s += ")";
+			s += Pretty.string(format, ")");
 			return s;
 		}
 	}

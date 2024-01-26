@@ -12,6 +12,8 @@ public class Value extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
-		return new String(ident);
+		String rv = new String();
+		rv += Pretty.string(format, ident);
+		return rv;
 	}
 }

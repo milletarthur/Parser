@@ -21,7 +21,7 @@ public class E1 extends Tree implements ITree {
 			string += pre.pretty(d+1);
 		}
 		if (ptr != null) {
-			string += ptr;
+			string += Pretty.string(format, ptr);
 		}
 		string += value.pretty(d+1);
 		if (post != null) {

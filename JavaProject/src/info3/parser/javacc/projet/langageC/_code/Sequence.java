@@ -27,9 +27,11 @@ public class Sequence extends Tree implements ITree {
 	public String pretty(int d) {
 		String string = new String();
 		for (Tree statement : statements) {
-			string += statement.pretty(d+1);
 			string += newline(d);
+			string += statement.pretty(d);
+//			string += newline(d);
 		}
+		string += newline(d);
 		return string;
 	}
 

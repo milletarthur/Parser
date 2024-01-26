@@ -21,7 +21,7 @@ public class PrePostOp extends Tree implements ITree {
 	public String pretty(int d) {
 		String string = new String();
 		if(this.t1 == null) {
-			string += prepostop;
+			string += Pretty.string(format, prepostop);
 		}else if(t1 != null && t2 == null){
 			string += Pretty.string(format, "[");
 			string += t1.pretty(d+1);
