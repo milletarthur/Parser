@@ -71,7 +71,7 @@ TOKEN:
 | < RPAR    : ")" > { Tracing.token("RPAR", image.toString()); }
 }
 
-TOKEN:
+TOKEN: 
 { < STRING : < DQUOTE > (~["\\"])* < DQUOTE > > {  Tracing.token("STRING", image.toString()); }
 | < CHAR: < QUOTE > (~["\\"])* < QUOTE > > { Tracing.token("CHAR", image.toString()); }
 }
@@ -323,7 +323,7 @@ Tree DECL(int d):
   s3 = opt_PTR(d)
   {
 	if(s3 != null) { 
-    	s3 = s3 + s2 + token.toString();
+    	s3 = s2 + token.toString() + " " + s3;
     } else { 
       s3 = s2 + token.toString();
     }
@@ -526,9 +526,9 @@ String opt_SIGN(int d) :
 }
 {
   token = <SIGN>
-  { return token.toString(); }
+  { return token.toString() + " "; }
 | //epsilon
-  { return null; }
+  { return ""; }
 }
 
 //PRE_TYPE ::= "long" | "short" | epsilon
@@ -539,7 +539,7 @@ String opt_PRE_TYPE(int d, String s) :
 }
 {
   token = <PRE_TYPE>
-  { return s + token.toString(); }
+  { return s + token.toString() + " "; }
 | //epsilon
   { return s; }
 }

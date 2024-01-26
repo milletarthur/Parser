@@ -25,12 +25,12 @@ public class Block extends Tree implements ITree {
 		if (sequence.isEmpty()) {
 			return string;
 		} else {
-			string += Pretty.string(format, "{");
+			//string += Pretty.string(format, "{");
 			string += newline(d+1);
 			string += sequence.pretty(d+1);
 			string += newline(d+1);
-			string += Pretty.string(format, "}");
-			string += newline(d+1);
+//			string += Pretty.string(format, "}");
+			string += newline(d);
 		}
 		return string;
 	}

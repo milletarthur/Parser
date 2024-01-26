@@ -19,7 +19,9 @@ public class While extends Tree implements ITree {
 		string += Pretty.string(format, "(");
 		string += cond.pretty(d+1);
 		string += Pretty.string(format, ")");
+		string += Pretty.string(format, "{");
 		string += body.pretty(d+1);
+		string += Pretty.string(format, "}");
 		return string;
 	}
 
