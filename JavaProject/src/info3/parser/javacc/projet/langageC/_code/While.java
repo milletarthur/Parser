@@ -14,7 +14,8 @@ public class While extends Tree implements ITree {
 
 	@Override
 	public String pretty(int d) {
-		String s = new String("while");
+		String s = new String();
+		s += Pretty.keyword(d+1, format, "while");
 		s += Pretty.string(format, "(");
 		s += cond.pretty(d+1);
 		s += Pretty.string(format, ")");

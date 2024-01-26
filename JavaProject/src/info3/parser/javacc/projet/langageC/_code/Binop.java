@@ -2,30 +2,23 @@ package info3.parser.javacc.projet.langageC._code;
 
 public class Binop extends Tree implements ITree {
 
-	Tree lhs;
-	Tree rhs;
+	Tree l, r;
 	String op;
 
-	public Binop(Tree lhs, String op, Tree rhs) {
-		this.lhs = lhs;
-		this.op = op;
-		this.rhs = rhs;
+	public Binop(Tree l, Token op, Tree r) {
+		this.l = l;
+		this.op = op.toString();
+		this.r = r;
 	}
 
 	// PRETTY
 
 	@Override
 	public String pretty(int d) {
-		// TODO à modifier
-		{
-			String s = new String();
-			s += lhs.pretty(d+1);
-			s += " ";
-			s += op;
-			s += " ";
-			s += rhs.pretty(d+1);
-			return s;
-		}
+		String s = new String();
+		s += l.pretty(d+1);
+		s += Pretty.assignment(format, op);
+		s += r.pretty(d+1);
+		return s;
 	}
-
 }

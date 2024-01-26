@@ -28,7 +28,11 @@ public class Sequence extends Tree implements ITree {
 		String string = new String();
 		if (!isEmpty()) {
 			Iterator<Tree> iter = statements.iterator();
+//			if (iter.hasNext()) {
+//				string += iter.next().pretty(d+1);
+//			}
 			while (iter.hasNext())
+//				string += Pretty.newline(d+1, format, line_number);
 				string += iter.next().pretty(d + 1);
 		}
 		return string;

@@ -40,10 +40,13 @@ public class Tree implements ITree {
 	// PRETTY
 
 	String newline(int d) {
-		// TODO à modifier
-		{
-			return null;
+		String string = new String();
+		string += "\n";
+		string += Pretty.line_number(format, Integer.toString(line_number));
+		for(int i = 0; i < d; i++) {
+			string += "\t";
 		}
+		return string;
 	}
 
 	public String pretty_with_line_number(int indentation) { // GIVEN

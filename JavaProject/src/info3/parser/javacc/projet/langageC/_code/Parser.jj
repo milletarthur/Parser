@@ -234,24 +234,17 @@ Tree RETURN(int d) :
   }
 }
 
-// EXPR ::= "(" . EXPR . ")" . opt_BINOP_EXPR
-//		   | opt_PRE_POST_OP . E1 . opt_BINOP_EXPR
+// EXPR ::= opt_PRE_POST_OP . E1 . opt_BINOP_EXPR
 Tree EXPR(int d) :
 {
   Tracing.call(d, "EXPR");
   Tree t,r,s, nu = null;
 }
 {
-  < LPAR >
-  t = EXPR(d+1)
-  < RPAR >
-  r = opt_BINOP_EXPR(d+1, t)
-  { return new Expr(nu,r); }
-|
   s = opt_PRE_POST_OP(d+1)
   t = E1(d+1,s)
   r = opt_BINOP_EXPR(d+1, t)
-  { return new Expr(t,r); }
+  { return new Expr(r); }
 }
 
 // Tree opt_BINOP_EXPR ::=
@@ -267,7 +260,7 @@ Tree opt_BINOP_EXPR(int d, Tree left) :
   binop = <BINOP>
   right = EXPR(d+1)
   {
-  return new Binop(left, binop.toString(), right); }
+  return new Binop(left, binop, right); }
 | /*epsilon*/
     { return left; }
 }
@@ -289,20 +282,17 @@ Tree opt_ASSIGNMENT(int d, Tree lhs) :
   { return lhs; }
 }
 
-// DECL ::= opt_SIGN . opt_PRE_TYPE . BASIC_TYPE . IDENTIFIER . opt_DECL . ("," . IDENTIFIER . opt_DECL)*
+// DECL ::= SIGNAGE . IDENTIFIER . opt_DECL . ("," . IDENTIFIER . opt_DECL)*
 Tree DECL(int d):
 {
   Tracing.call(d,"DECLARATION");
   Token token;
-  Tree r, rhs;
-  String s,s2;
+  Tree s, r, rhs;
+  String s2;
   ArrayList<Tree > trees = new ArrayList<Tree>();
 }
 {
-  s = opt_SIGN(d+1)
-  s2 = opt_PRE_TYPE(d+1, s)
-  token = <BASIC_TYPE>
-  { s2 = s2 + token.toString(); }
+  s = SIGNAGE(d+1)
   rhs = IDENTIFIER(d+1)
   r = opt_DECL(d+1, rhs)
   { trees.add(r); }
@@ -310,7 +300,19 @@ Tree DECL(int d):
     rhs = IDENTIFIER(d+1) 
     r = opt_DECL(d+1, rhs)
     { trees.add(r); }  )*
-  { return new Decl(s2, trees); }
+  { return new Decl(s, trees); }
+}
+
+//SIGNAGE ::= (SIGN | epsilon) . (PRE_TYPE | epsilon) . BASIC_TYPE
+Tree SIGNAGE(int d) :
+{
+  Token a=null,b=null,c;
+}
+{
+  (a = < SIGN >)?
+  (b = <PRE_TYPE>)?
+  c = < BASIC_TYPE >
+  { return new Signage(a,b,c); }
 }
 
 //opt_DECL ::= epsilon
@@ -381,9 +383,11 @@ Tree WHILEDO(int d):
 	{ return new While(t,te); }
 }
 
-// E1 ::=  VALUE . opt_PRE_POST_OP
-//		| VAR_FUNC . opt_PRE_POST_OP
-//		| (PTR)+ . IDENTIFIER . opt_PRE_POST_OP
+// E1 ::= ( VALUE
+//		| "(" . EXPR . ")"
+//		| VAR_FUNC
+//		| (PTR)+ . IDENTIFIER
+//		) . opt_PRE_POST_OP
 Tree E1(int d, Tree pre) :
 {
   Tracing.call(d, "E1");
@@ -397,6 +401,8 @@ Tree E1(int d, Tree pre) :
 |
    t = VAR_FUNC(d+1)
 |
+   t = PAR(d+1)
+|
   (
     token = <PTR>
 	{ ptrs = ptrs + token.toString(); }
@@ -406,6 +412,17 @@ Tree E1(int d, Tree pre) :
   post = opt_PRE_POST_OP(d+1)
   {return new E1(pre,ptrs,t,post); }
 }
+
+Tree PAR (int d) :
+{
+  Tree t;
+}
+{
+  < LPAR >
+   t = EXPR(d+1)
+   < RPAR >
+   { return new Parenthesis(t); }
+ }
 
 // VAR_FUNC ::= IDENTIFIER. ("(" . ARGS . ")" | epsilon) . opt_PRE_POST_OP
 Tree VAR_FUNC(int d) :
@@ -445,8 +462,7 @@ Tree ARGS(int d) :
 }
 
 // opt_PRE_POST_OP ::= PRE_POST_OP
-//					 | ("[" . EXPR . "]")+
-//					 | epsilon
+//					| ("[" . EXPR . "]")*
 Tree opt_PRE_POST_OP(int d) :
 {
   Tracing.call(d,"opt_PRE_POST_OP");
@@ -491,18 +507,7 @@ Tree VALUE(int d) :
  { return new Value(token); }
 }
 
-//SIGN ::= "unsigned" | "signed" | epsilon
-String opt_SIGN(int d) :
-{
-  Tracing.call(d,"opt_SIGN");
-  Token token;
-}
-{
-  token = <SIGN>
-  { return token.toString(); }
-| //epsilon
-  { return null; }
-}
+
 
 //PRE_TYPE ::= "long" | "short" | epsilon
 String opt_PRE_TYPE(int d, String s) :
@@ -527,16 +532,3 @@ Tree IDENTIFIER(int d) :
 { token = <IDENTIFIER>
     { return new Ident(token.toString()); }
 }
-
-
-//String BINOP(int d) :
-//{
-//  Token token;
-//}
-//{
-//  token = < BINOP >
-//  { return token.toString(); }
-//|
-//  token = < PTR >
-//  { return token.toString(); }
-//}    

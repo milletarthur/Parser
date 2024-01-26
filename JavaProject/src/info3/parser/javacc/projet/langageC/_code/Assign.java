@@ -3,14 +3,14 @@ package info3.parser.javacc.projet.langageC._code;
 public class Assign extends Tree implements ITree {
 
 	Tree location;
-	String assign_type;
+	String assign;
 	Tree expression;
 
 	// CONSTRUCTOR
 
-	public Assign(Tree lhs, String assign_type, Tree rhs) {
+	public Assign(Tree lhs, String assign, Tree rhs) {
 		this.location = lhs;
-		this.assign_type = assign_type;
+		this.assign = assign;
 		this.expression = rhs;
 	}
 
@@ -19,9 +19,8 @@ public class Assign extends Tree implements ITree {
 	@Override
 	public String pretty(int d) {
 		String string = new String();
-		string += Pretty.type(format, assign_type);
 		string += location.pretty(d+1);
-		string += Pretty.assignment(format, " = ");
+		string += Pretty.assignment(format, assign);
 		string += expression.pretty(d+1);
 		return string;
 	}

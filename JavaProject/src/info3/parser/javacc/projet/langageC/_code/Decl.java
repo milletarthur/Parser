@@ -6,12 +6,12 @@ import java.util.Iterator;
 public class Decl extends Tree implements ITree {
 
 	ArrayList<Tree> T;
-	String st;
+	Tree s;
 
 	// CONSTRUCTOR
 	
-	public Decl(String s ,ArrayList<Tree> trees) {
-		this.st=s;
+	public Decl(Tree s ,ArrayList<Tree> trees) {
+		this.s= s;
 		this.T=trees;
 	}
 
@@ -21,7 +21,7 @@ public class Decl extends Tree implements ITree {
 	public String pretty(int d) {
 		Iterator<Tree> iter = T.iterator();
 		String string = new String();
-		string+=st;
+		string += s.pretty(d+1);
 		if(iter.hasNext())
 			string += iter.next().pretty(d+1);
 		while(iter.hasNext()) {
