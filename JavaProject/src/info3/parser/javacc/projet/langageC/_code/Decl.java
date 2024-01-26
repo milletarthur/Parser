@@ -26,7 +26,8 @@ public class Decl extends Tree implements ITree {
 				string+= ",";
 			}
 			string += T.get(T.size()-1).pretty(d+1);
-			//string += newline(d+1);
+			string += Pretty.string(format, ";");
+			string += newline(d+1);
 			return string;
 		}else { //EOFEcxeption 
 			System.out.println("/!\\ Decl : ArrayList n'a pas d'elem ce qui n'est pas normal ");

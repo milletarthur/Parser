@@ -17,7 +17,6 @@ public class Return extends Tree implements ITree {
 		string += Pretty.identifier(format, "return ");
 		string += expr.pretty(d+1);
 		string += Pretty.identifier(format, ";");
-		string += newline(d+1);
 		return string;
 	}
 
