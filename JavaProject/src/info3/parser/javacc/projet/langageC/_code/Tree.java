@@ -41,10 +41,9 @@ public class Tree implements ITree {
 
 	String newline(int d) {
 		String s = new String();
-		
 		s += "\n";
 		for(int i=0; i<d; i++) {
-			s+="\t"; 
+			s+="  "; 
 		}
 		return s;
 	}
