@@ -323,20 +323,23 @@ Tree SIGNAGE(int d) :
   { return new Signage(a,b,c,ptr); }
 }
 
-//opt_DECL ::= epsilon
-// 			 | BINASSIGN . EXPR
+//opt_DECL ::= opt_PRE_POST_OP . (BINASSIGN . EXPR)?
 Tree opt_DECL(int d, Tree rhs) :
 {
   Tracing.call(d,"opt_DECL");
   Token token;
-  Tree lhs;
+  Tree temp,lhs;
 }
 {
+  temp = opt_PRE_POST_OP(d+1)
+  { rhs = new Array(rhs,temp); }
+  (
   token = <BINASSIGN>
   lhs = EXPR(d+1)
   { return new Assign(rhs, token.toString(), lhs); }
-|  //epsilon
+ | /*epsilon*/
   { return rhs; }
+  )
 }
 
 
@@ -415,7 +418,7 @@ Tree E1(int d, Tree pre) :
     token = <PTR>
 	{ ptrs = ptrs + token.toString(); }
   )+
-  t = IDENTIFIER(d+1)
+  t = EXPR(d+1)
   )
   post = opt_PRE_POST_OP(d+1)
   {return new E1(pre,ptrs,t,post); }

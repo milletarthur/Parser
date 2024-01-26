@@ -24,7 +24,7 @@ public class Ifte extends Tree implements ITree {
 		string += cond.pretty(d+1);
 		string += Pretty.string(format, ")");
 		string += then_block.pretty(d+1);
-		if (!else_block.isEmpty()) {
+		if (else_block != null && !else_block.isEmpty()) {
 			string += Pretty.keyword(d+1,format,"else");
 			string += else_block.pretty(d+1);
 		}
