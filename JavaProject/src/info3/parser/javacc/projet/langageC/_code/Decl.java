@@ -19,6 +19,7 @@ public class Decl extends Tree implements ITree {
 	@Override
 	public String pretty(int d) {
 		String string = new String();
+		string += identation(d);
 		string+=st;
 		string+=Pretty.string(format, " ");
 		if(T.size() !=0) {
@@ -27,7 +28,7 @@ public class Decl extends Tree implements ITree {
 				string+= Pretty.separator(format, ",");
 			}
 			string += T.get(T.size()-1).pretty(d+1);
-			string += Pretty.string(format, ";");
+//			string += Pretty.separator(format, ";");
 //			string += newline(d+1);
 			return string;
 		}else { //EOFEcxeption 
