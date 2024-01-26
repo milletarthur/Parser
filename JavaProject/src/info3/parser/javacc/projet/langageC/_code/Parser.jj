@@ -248,7 +248,7 @@ Tree EXPR(int d) :
 }
 
 // Tree opt_BINOP_EXPR ::=
-//    | BINOP . EXPR
+//    | (BINOP | PTR) . EXPR
 //    | epsilon
 Tree opt_BINOP_EXPR(int d, Tree left) :
 {
@@ -306,7 +306,7 @@ Tree DECL(int d):
   { return new Decl(s, trees); }
 }
 
-//SIGNAGE ::= (SIGN | epsilon) . (PRE_TYPE | epsilon) . (PTR)* . BASIC_TYPE
+//SIGNAGE ::= (SIGN | epsilon) . (PRE_TYPE | epsilon) . BASIC_TYPE . (PTR)*
 Tree SIGNAGE(int d) :
 {
   Token a=null,b=null,c, e = null;
@@ -421,6 +421,7 @@ Tree E1(int d, Tree pre) :
   {return new E1(pre,ptrs,t,post); }
 }
 
+//PAR ::= "(" . EXPR . ")"
 Tree PAR (int d) :
 {
   Tree t;
@@ -495,7 +496,6 @@ Tree opt_PRE_POST_OP(int d) :
 //    | <BOOLEAN>
 //    | <STRING>
 //    | <FLOAT>
-//    | <DOUBLE> TODO
 //    | <CHAR>
 
 Tree VALUE(int d) :

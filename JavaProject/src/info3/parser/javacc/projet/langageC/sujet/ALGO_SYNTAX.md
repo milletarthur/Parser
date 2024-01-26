@@ -18,19 +18,19 @@ STATEMENT ::=
 
 RETURN ::= "return" . EXPR
 
-EXPR ::=
-    | "(" . EXPR . ")" . opt_BINOP_EXPR
-    | opt_PRE_POST_OP . E1 . opt_BINOP_EXPR
+EXPR ::= opt_PRE_POST_OP . E1 . opt_BINOP_EXPR
 
 opt_BINOP_EXPR ::=
     | epsilon
-    | BINOP . EXPR
+    | (BINOP | PTR) . EXPR
 
 opt_ASSIGNMENT ::=
     | BINASSIGN . EXPR
     | epsilon
 
-DECL ::= SIGN . PRE_TYPE . TYPE . IDENT . opt_DECL . ("," . IDENT . opt_DECL)*
+DECL ::= SIGNAGE . IDENT . opt_DECL . ("," . IDENT . opt_DECL)*
+
+SIGNAGE ::= (SIGN | epsilon) . (PRE_TYPE | epsilon) . TYPE . (PTR)*
 
 opt_DECL ::=
     | epsilon
@@ -45,15 +45,16 @@ opt_ELSE ::=
 WHILEDO ::= "while"  . "(" . EXPR . ")" . BLOCK
 
 E1 ::= (
-    | VALUE
-    | IDENT
+    | "(" . EXPR . ")"
+    | VAR_FUNC
     | (PTR)+ . IDENT
-    | FUNCTION
     ) . opt_PRE_POST_OP
 
 FUNCTION ::= IDENT . "(" . (epsilon | ARGS) . ")"
 
-ARGS ::= EXPR . opt_ARGS
+VAR_FUNC ::= IDENTIFIER . ( "(" . ARGS . ")" | epsilon ) . opt_PRE_POST_OP
+
+ARGS ::= epsilon | EXPR . ("," . EXPR)*
 
 opt_ARGS ::=
     | epsilon
@@ -90,7 +91,7 @@ ASCII ::= All characters in the ASCII table !! WITH "\\" AND NOT "\" !!
 
 BOOLEAN ::= "true" | "false"
 
-BINOP ::= "/" | "!=" | "==" | "|" | "+" | "-" | "*" | "%" | "<"
+BINOP ::= "/" | "!=" | "==" | "|" | "+" | "-" | "%" | "<"
     | ">" | "<=" | ">=" | "&&" | "||" | "<<" | ">>"
 
 BINASSIGN ::= "=" | ":=" | "+=" | "-=" | "*=" | "&="  | "|=" | "<<=" | ">>="
