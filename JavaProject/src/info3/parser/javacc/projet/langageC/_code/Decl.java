@@ -20,6 +20,7 @@ public class Decl extends Tree implements ITree {
 	public String pretty(int d) {
 		String string = new String();
 		string+=st;
+		string+=" ";
 		if(T.size() !=0) {
 			for(int i=0; i< T.size()-1;i++) {
 				string+= T.get(i).pretty(d+1);
