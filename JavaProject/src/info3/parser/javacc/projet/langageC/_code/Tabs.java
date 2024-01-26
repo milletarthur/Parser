@@ -17,7 +17,7 @@ public class Tabs extends Tree implements ITree {
 		Iterator<Tree> iter = t.iterator();
 		while (iter.hasNext()) {
 			s += Pretty.separator(format, "[");
-			s += iter.next().pretty(d+1);
+			s += iter.next().pretty(d);
 			s += Pretty.separator(format, "]");
 		}
 		return s;
