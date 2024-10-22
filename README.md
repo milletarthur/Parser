@@ -1,3 +1,11 @@
+Projet réalisé par 
+ - Antonia Ivanova
+ - Grégory Toureillle
+ - Rémi Gaulmin
+ - Arthur Millet
+ - Pierre Bernard
+ - [Samuel Lepin](https://github.com/samuellepin)
+
 # État du projet au 6 décembre
 
 Le `JavaProjet` qui vous est fourni, compile et est capable de parser le fichier `test/pass/a00.c`. 
@@ -8,7 +16,7 @@ Le `JavaProjet` qui vous est fourni, compile et est capable de parser le fichier
 
 À lire avant de commencer...
 
-### 2. Le épertoire `_code/` contient
+### 2. Le répertoire `_code/` contient
 
 #### Un parser en JavaCC à compléter
 
