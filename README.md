@@ -1,6 +1,6 @@
 Projet réalisé par 
  - Antonia Ivanova
- - Grégory Toureillle
+ - [Grégory Toureillle](https://github.com/nyoukki)
  - Rémi Gaulmin
  - Arthur Millet
  - Pierre Bernard
